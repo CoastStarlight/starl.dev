@@ -14,7 +14,8 @@ var Engine = Matter.Engine,
 
 // create an engine
 var engine = Engine.create();
-
+var bgColor = "#24273a"
+var mousePos = [-100, -100]
 // create a renderer
 var render = Render.create({
     element: document.body,
@@ -23,17 +24,18 @@ var render = Render.create({
         width: window.innerWidth,
         height: window.innerHeight,
         //catpuccin machiato
-        background: "#24273a",
+        background: bgColor,
         wireframes: false
     }
 });
 
+var collidableTextIDs = ["title", "aboutme"]
 
 function makeRenderOptions() {
     colors = ["#f5bde6", "#c6a0f6", "#ed8796", "#ee99a0", "#f5a97f", "#eed49f", "#8bd5ca", "#7dc4e4", "#8aadf4"]
-    return { render: {
+    return {
         fillStyle: colors[Math.floor(Math.random() * colors.length)]
-    }}
+    }
 }
 
 
@@ -42,16 +44,16 @@ var mouseConstraint = MouseConstraint.create(engine, {
     mouse: mouse
 })
 
-Events.on(mouseConstraint, "mousemove", function(event) {
-    Body.setPosition(mouseBody, Vector.create(event.mouse.position.x, event.mouse.position.y))
-})
+// Events.on(mouseConstraint, "mousemove", function(event) {
+//     Body.setPosition(mouseBody, Vector.create(event.mouse.position.x, event.mouse.position.y))
+// })
 
 
 // create two boxes and a ground
 // var boxA = Bodies.rectangle(400, 200, 80, 80, makeRenderOptions());
 // var boxB = Bodies.rectangle(450, 50, 80, 80, makeRenderOptions());
-var mouseBody = Bodies.circle(-300, 100, 20, { isStatic: true, render: { fillStyle: "#24273a"}});
-var killGround = Bodies.rectangle(400, window.innerHeight+100, 8100, 60, { isStatic: true });
+var mouseBody = Bodies.circle(-300, 100, 20, { isStatic: true, render: { fillStyle: bgColor}});
+var killGround = Bodies.rectangle(0, window.innerHeight+100, 100000, 60, { isStatic: true });
 var leftWall = Bodies.rectangle(-50, 0, 100, 10000000, { isStatic: true})
 var rightWall = Bodies.rectangle(window.innerWidth+50, 0, 100, 1000000, { isStatic: true})
 
@@ -89,28 +91,58 @@ Events.on(engine, "collisionStart", function(e) {
         }
     }
 })
-setInterval(function() {
-    Composite.add(engine.world, Bodies.circle(Math.random()*window.innerWidth, 0, 40))
-    // var collisions = Detector.collisions(KillPlateDetector)
 
-    // for (let i = 0; i  < collisions.length; i++) {
-    //     var body1 = collisions[i].bodyA
-    //     var body2 = collisions[i].bodyB
+setInterval(spawnBall, 500)
 
+function spawnBall() {
+    if(engine.world.bodies.length >= 20) return
 
-    //     console.log("hi")
-    //    if(body1 != killGround && body1 != mouseBody) {
-    //     Matter.World.remove(body1)
-    //     continue
-    //    }
-    //    if(body2 != killGround && body2 != mouseBody) {
-    //     Matter.World.remove(body2)
-    //    }
-    // }
-    // Detector.clear(KillPlateDetector)
-}, 1000)
+    Composite.add(engine.world, Bodies.circle(Math.random()*window.innerWidth, 0, 40, {restitution:1, render: makeRenderOptions()}))
+}
+spawnBall()
 
 window.onerror = function(msg, url, line, col, error) {
     // Catch the error and do whatever is necessary
     return true; // Prevent the original error message from appearing in the console
 };
+
+onresize = (e) => {
+    render.canvas.width=window.innerWidth
+    render.canvas.height=window.innerHeight
+    Body.setPosition(rightWall, Vector.create(window.innerWidth+50, 0))
+    Body.setPosition(killGround, Vector.create(0, window.innerHeight+100))
+}
+
+function setupTextCollision() {
+    collidableTextIDs.forEach(id => {
+        var element = document.getElementById(id)
+        var bounds = element.getBoundingClientRect()
+        // Composite.add(engine.world,
+        //     Bodies.rectangle(bounds.x + 0.5 * bounds.width, bounds.y + 0.5 * bounds.height, bounds.width, bounds.height, {isStatic: true})
+        // )
+        Composite.add(engine.world, 
+            Bodies.fromVertices(bounds.x + 0.5 * bounds.width, bounds.y + 0.5 * bounds.height,
+                [
+                    Vector.create(bounds.x, bounds.y),
+                    Vector.create(bounds.x, bounds.y+bounds.height),
+                    Vector.create(bounds.x+bounds.width, bounds.y+bounds.height),
+                    Vector.create(bounds.x+bounds.width, bounds.y),
+                    Vector.create(bounds.x + 0.5*bounds.width, bounds.y-bounds.width*.08)
+
+                ], {
+                    isStatic: true,
+                    render: {
+                        fillStyle: bgColor
+                    }
+                }
+            )
+        )
+    });
+
+}
+
+setupTextCollision()
+
+onmousemove = (e) => {
+    Body.setPosition(mouseBody, Vector.create(e.clientX, e.clientY))
+}

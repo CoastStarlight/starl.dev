@@ -20,9 +20,20 @@ canvas {
 .title {
     color: #a6da95;
     font-size: 100px;
+    /* width: 800px; */
+    width: fit-content;
+    margin: auto;
+
 }
 
 p {
     color: #cad3f5;
     font-size: 25px;
+    width: fit-content;
+    margin: auto;
+
+}
+
+#block {
+    height: 300px;
 }
