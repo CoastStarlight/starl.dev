@@ -1,4 +1,8 @@
+var body = document.body,
+    html = document.documentElement;
 
+var height = Math.max( body.scrollHeight, body.offsetHeight,
+                       html.clientHeight, html.scrollHeight, html.offsetHeight );
 // module aliases
 var Engine = Matter.Engine,
     Render = Matter.Render,
@@ -22,7 +26,7 @@ var render = Render.create({
     engine: engine,
     options: {
         width: window.innerWidth,
-        height: window.innerHeight,
+        height: height,
         //catpuccin machiato
         background: bgColor,
         wireframes: false
@@ -53,10 +57,10 @@ var mouseConstraint = MouseConstraint.create(engine, {
 // var boxA = Bodies.rectangle(400, 200, 80, 80, makeRenderOptions());
 // var boxB = Bodies.rectangle(450, 50, 80, 80, makeRenderOptions());
 var mouseBody = Bodies.circle(-300, 100, 20, { isStatic: true, render: { fillStyle: bgColor}});
-var killGround = Bodies.rectangle(0, window.innerHeight+100, 100000, 60, { isStatic: true });
+var killGround = Bodies.rectangle(0, height+100, 100000, 60, { isStatic: true });
 var leftWall = Bodies.rectangle(-50, 0, 100, 10000000, { isStatic: true})
 var rightWall = Bodies.rectangle(window.innerWidth+50, 0, 100, 1000000, { isStatic: true})
-
+var mover = Bodies.rectangle(window.innerWidth/2, 800, 100, 20, { isStatic: true, render: makeRenderOptions()})
 
 
 
@@ -65,7 +69,7 @@ var rightWall = Bodies.rectangle(window.innerWidth+50, 0, 100, 1000000, { isStat
 //     Body.setPosition(mouseBody, Vector.create(mouseConstraint.mouse.absolute.x, mouseConstraint.mouse.absolute.y))
 // })
 // add all of the bodies to the world
-Composite.add(engine.world, [mouseBody, killGround, leftWall, rightWall]);
+Composite.add(engine.world, [mouseBody, killGround, leftWall, rightWall, mover]);
 
 var KillPlateDetector = Detector.create({bodies: [killGround]})
 
@@ -95,8 +99,6 @@ Events.on(engine, "collisionStart", function(e) {
 setInterval(spawnBall, 500)
 
 function spawnBall() {
-    if(engine.world.bodies.length >= 20) return
-
     Composite.add(engine.world, Bodies.circle(Math.random()*window.innerWidth, 0, 40, {restitution:1, render: makeRenderOptions()}))
 }
 spawnBall()
@@ -108,19 +110,20 @@ window.onerror = function(msg, url, line, col, error) {
 
 onresize = (e) => {
     render.canvas.width=window.innerWidth
-    render.canvas.height=window.innerHeight
+    render.canvas.height=height
     Body.setPosition(rightWall, Vector.create(window.innerWidth+50, 0))
-    Body.setPosition(killGround, Vector.create(0, window.innerHeight+100))
+    Body.setPosition(killGround, Vector.create(0, height+100))
 }
 
 function setupTextCollision() {
-    collidableTextIDs.forEach(id => {
-        var element = document.getElementById(id)
+    var elements = document.getElementsByClassName("collide")
+    for (let i =0; i<elements.length; i++) {
+        var element = elements.item(i)
         var bounds = element.getBoundingClientRect()
         // Composite.add(engine.world,
         //     Bodies.rectangle(bounds.x + 0.5 * bounds.width, bounds.y + 0.5 * bounds.height, bounds.width, bounds.height, {isStatic: true})
         // )
-        Composite.add(engine.world, 
+        Composite.add(engine.world,
             Bodies.fromVertices(bounds.x + 0.5 * bounds.width, bounds.y + 0.5 * bounds.height,
                 [
                     Vector.create(bounds.x, bounds.y),
@@ -137,7 +140,7 @@ function setupTextCollision() {
                 }
             )
         )
-    });
+    }
 
 }
 
@@ -146,3 +149,8 @@ setupTextCollision()
 onmousemove = (e) => {
     Body.setPosition(mouseBody, Vector.create(e.clientX, e.clientY))
 }
+
+Events.on(engine, "beforeUpdate", (event) => {
+    Body.setPosition(mover, Vector.create(Math.sin(event.timestamp/500)*(window.innerWidth/2 - 65) + window.innerWidth/2, 950))
+
+})

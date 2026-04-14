@@ -26,14 +26,30 @@ canvas {
 
 }
 
-p {
+p, h1 {
     color: #cad3f5;
-    font-size: 25px;
+
     width: fit-content;
     margin: auto;
 
 }
 
+p {
+    font-size: 25px;
+}
+
 #block {
     height: 300px;
+}
+
+* {
+    font-family: "Open Sans", sans-serif;
+}
+
+button {
+    background-color: #a6da95;
+    border-radius: 15px;
+    font-size: 25px;
+    border: 0;
+    padding: 5px 10px;
 }

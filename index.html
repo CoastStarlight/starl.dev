@@ -1,13 +1,32 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
         <div id="block"></div>
-        <h1 class="title center" id="title">Miles Robinson</h1>
-        <br><br>
-        <p class="center" id="aboutme">Welcome to my website!</p>
+        <h1 class="title center collide" id="title"><b>Miles Robinson</b></h1>
+        <br><br><br><br><br>
+        <h1 class="center collide">About Me</h1><br>
+        <p class="center collide">Hello! this is my portfolio/resume (whatever you want to call it)<br></p>
+        <p class="center collide">I am a dev preparing myself to become a software engineer <br></p>
+        <p class="center collide">welcome to my website!<br></p>
+        <div id="block"></div>
+        <h1 class="center collide">My Skills</h1><br>
+        <p class="center collide">I know a variaty of languages!<br></p>
+        <p class="center collide">I started with javascript and am familiar with base js<br></p>
+        <p class="center collide">I have the most experience in java<br></p>
+        <p class="center collide">I have handled mySQL/SQLite and DB<br></p>
+        <p class="center collide">I am an avid self-hoster and know system admin<br></p>
+        <div id="block"></div>
+        <div class="center">
+                    <button type="button" onclick="for(let i = 0; i<20; i++) spawnBall()" class="collide">Spawn Balls</button>
+
+        </div>
         <script src="matter.min.js"></script>
         <script src="main.js"></script>
     </body>
