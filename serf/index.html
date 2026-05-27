@@ -1,0 +1,322 @@
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+#game { padding: 1rem; max-width: 640px; margin: 0 auto; font-family: var(--font-sans); }
+h2 { font-size: 18px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+.subtitle { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 1rem; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+.stat { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 8px; text-align: center; }
+.stat-label { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 2px; }
+.stat-val { font-size: 20px; color: var(--color-text-primary); }
+.season-badge { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.tax-bar { height: 6px; background: var(--color-background-secondary); border-radius: 3px; margin-bottom: 10px; overflow: hidden; }
+.tax-fill { height: 100%; background: #E24B4A; border-radius: 3px; transition: width 0.4s; }
+.field { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 12px; margin-bottom: 10px; }
+.field-row { display: flex; flex-wrap: wrap; gap: 5px; font-size: 22px; }
+.plot { padding: 2px; border-radius: 4px; transition: transform 0.1s; user-select: none; }
+.tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+.tab { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 6px 14px; cursor: pointer; font-size: 13px; color: var(--color-text-secondary); }
+.tab.active { background: var(--color-background-primary); border-color: var(--color-border-primary); color: var(--color-text-primary); font-weight: 500; }
+.panel { display: none; }
+.panel.active { display: block; }
+.actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+button { background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 10px 6px; cursor: pointer; font-size: 13px; color: var(--color-text-primary); transition: background 0.15s; width: 100%; }
+button:hover:not(:disabled) { background: var(--color-background-secondary); }
+button:disabled { opacity: 0.38; cursor: default; }
+.btn-icon { font-size: 18px; display: block; margin-bottom: 2px; }
+.shop-btn { text-align: left; padding: 10px 12px; }
+.shop-btn .btn-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.shop-btn .btn-desc { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+.shop-btn .btn-cost { font-size: 12px; color: var(--color-text-secondary); margin-top: 4px; }
+.log { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; font-size: 13px; color: var(--color-text-secondary); min-height: 38px; border-left: 3px solid var(--color-border-tertiary); margin-top: 10px; }
+.log.bad { border-left-color: #E24B4A; color: var(--color-text-danger); }
+.log.good { border-left-color: #639922; color: var(--color-text-success); }
+.spoil-indicator { font-size: 10px; color: var(--color-text-secondary); margin-top: 4px; }
+.wrapper { position: relative; }
+.overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; border-radius: var(--border-radius-lg); z-index: 10; }
+.modal { background: var(--color-background-primary); border-radius: var(--border-radius-lg); padding: 1.5rem; text-align: center; max-width: 280px; border: 0.5px solid var(--color-border-tertiary); }
+.modal h3 { font-size: 18px; font-weight: 500; margin-bottom: 8px; color: var(--color-text-primary); }
+.modal p { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 1rem; }
+.upgrades-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.badge { font-size: 11px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 99px; padding: 2px 8px; color: var(--color-text-secondary); }
+</style>
+
+<div id="game">
+  <h2>🌾 Serf Life</h2>
+  <p class="subtitle">Russia, 1820 — survive the seasons, serve the Tsar.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Grain 🌾</div><div class="stat-val" id="s-grain">10</div></div>
+    <div class="stat"><div class="stat-label">Rubles 💰</div><div class="stat-val" id="s-rubles">3</div></div>
+    <div class="stat"><div class="stat-label">Health ❤️</div><div class="stat-val" id="s-health">100</div></div>
+    <div class="stat"><div class="stat-label">Year 📅</div><div class="stat-val" id="s-year">1</div></div>
+  </div>
+
+  <div class="season-badge" id="season-label">🌱 Spring — plant your crops</div>
+  <div class="tax-bar"><div class="tax-fill" id="tax-fill" style="width:0%"></div></div>
+
+  <div class="upgrades-row" id="upgrades-row"></div>
+
+  <div class="wrapper" id="field-wrapper">
+    <div class="field">
+      <div class="field-row" id="field"></div>
+      <div class="spoil-indicator" id="spoil-label"></div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('farm')">🌾 Farm</div>
+    <div class="tab" onclick="switchTab('shop')">🏪 Market</div>
+  </div>
+
+  <div id="panel-farm" class="panel active">
+    <div class="actions">
+      <button id="btn-plow" onclick="plow()"><span class="btn-icon">🐂</span>Plow & Plant</button>
+      <button id="btn-harvest" onclick="harvest()"><span class="btn-icon">🌾</span>Harvest</button>
+      <button id="btn-sell" onclick="sell()"><span class="btn-icon">🛒</span>Sell Grain</button>
+      <button id="btn-rest" onclick="rest()"><span class="btn-icon">🛏️</span>Rest</button>
+      <button id="btn-bribe" onclick="bribe()"><span class="btn-icon">🤫</span>Bribe Official</button>
+      <button id="btn-endseason" onclick="endSeason()"><span class="btn-icon">⏭️</span>Next Season</button>
+    </div>
+  </div>
+
+  <div id="panel-shop" class="panel">
+    <div class="shop-grid" id="shop-grid"></div>
+  </div>
+
+  <div class="log" id="log">You wake to frozen ground. Another year begins.</div>
+</div>
+
+<script>
+const SEASONS = ['🌱 Spring','☀️ Summer','🍂 Autumn','❄️ Winter'];
+const SEASON_HINTS = ['plant your crops','tend the fields','harvest & prepare','survive and pray'];
+
+const SHOP_ITEMS = [
+  { id:'land1', icon:'🌍', title:'Extra Plot (4)', desc:'Buy 4 more farm plots', cost:'6 rubles', canBuy: s => s.rubles>=6 && s.extraPlots<12, buy: s => { s.rubles-=6; s.extraPlots+=4; }, label: s => s.extraPlots>=12?'Max land':'Buy (6💰)' },
+  { id:'land2', icon:'🗺️', title:'Large Field (+8)', desc:'8 more plots, great yield', cost:'14 rubles', canBuy: s => s.rubles>=14 && s.extraPlots<12, buy: s => { s.rubles-=14; s.extraPlots=Math.min(12,s.extraPlots+8); }, label: s => s.extraPlots>=12?'Max land':'Buy (14💰)' },
+  { id:'seed1', icon:'🌿', title:'Hardy Seeds', desc:'Crops resist blight (50%→15%)', cost:'5 rubles', canBuy: s => s.rubles>=5 && !s.upgrades.hardySeeds, buy: s => { s.rubles-=5; s.upgrades.hardySeeds=true; }, label: s => s.upgrades.hardySeeds?'Owned':'Buy (5💰)' },
+  { id:'seed2', icon:'🌻', title:'Sunflower Crop', desc:'+2 grain per plot at harvest', cost:'8 rubles', canBuy: s => s.rubles>=8 && !s.upgrades.sunflower, buy: s => { s.rubles-=8; s.upgrades.sunflower=true; }, label: s => s.upgrades.sunflower?'Owned':'Buy (8💰)' },
+  { id:'barn', icon:'🏚️', title:'Root Cellar', desc:'Grain spoils after 3 seasons not 1', cost:'7 rubles', canBuy: s => s.rubles>=7 && !s.upgrades.cellar, buy: s => { s.rubles-=7; s.upgrades.cellar=true; }, label: s => s.upgrades.cellar?'Owned':'Buy (7💰)' },
+  { id:'ox', icon:'🐂', title:'Second Ox', desc:'Plowing costs 5 health, not 10', cost:'10 rubles', canBuy: s => s.rubles>=10 && !s.upgrades.ox, buy: s => { s.rubles-=10; s.upgrades.ox=true; }, label: s => s.upgrades.ox?'Owned':'Buy (10💰)' },
+  { id:'vodka', icon:'🍶', title:'Bottle of Vodka', desc:'Restore 30 health instantly', cost:'3 rubles', canBuy: s => s.rubles>=3, buy: s => { s.rubles-=3; s.health=Math.min(100,s.health+30); }, label: s => 'Buy (3💰)' },
+  { id:'bribe2', icon:'🎁', title:'Gift Basket', desc:'Cut tax owed by 8 rubles', cost:'4 rubles', canBuy: s => s.rubles>=4 && s.taxDue>0, buy: s => { s.rubles-=4; s.taxDue=Math.max(0,s.taxDue-8); }, label: s => s.taxDue>0?'Buy (4💰)':'(winter only)' },
+];
+
+function freshState() {
+  return {
+    grain: 10, rubles: 3, health: 100, year: 1, seasonIdx: 0,
+    plots: Array(8).fill('empty'),
+    extraPlots: 0,
+    grainAge: 0,
+    taxDue: 0, taxPaid: 0,
+    plowed: false, harvested: false, dead: false,
+    upgrades: { hardySeeds: false, sunflower: false, cellar: false, ox: false }
+  };
+}
+
+let state = freshState();
+
+function $(id){ return document.getElementById(id); }
+
+function totalPlots(s){ return 8 + s.extraPlots; }
+
+function render() {
+  $('s-grain').textContent = state.grain;
+  $('s-rubles').textContent = state.rubles;
+  $('s-health').textContent = state.health;
+  $('s-year').textContent = state.year;
+  $('season-label').textContent = SEASONS[state.seasonIdx] + ' — ' + SEASON_HINTS[state.seasonIdx];
+
+  const taxPct = state.taxDue > 0 ? Math.min(100, Math.round(state.taxPaid / state.taxDue * 100)) : 0;
+  $('tax-fill').style.width = taxPct + '%';
+
+  const tp = totalPlots(state);
+  if (state.plots.length !== tp) {
+    state.plots = Array(tp).fill('empty');
+  }
+
+  const field = $('field');
+  field.innerHTML = '';
+  state.plots.forEach(p => {
+    const el = document.createElement('span');
+    el.className = 'plot';
+    el.textContent = p==='empty'?'🟫': p==='planted'?'🌱': p==='grown'?'🌾':'❄️';
+    field.appendChild(el);
+  });
+
+  const maxAge = state.upgrades.cellar ? 3 : 1;
+  if (state.grain > 0 && state.grainAge >= maxAge) {
+    $('spoil-label').textContent = '⚠️ Grain is old — will spoil next season!';
+  } else if (state.grain > 0 && state.grainAge > 0) {
+    $('spoil-label').textContent = `🕰️ Grain age: ${state.grainAge}/${maxAge} seasons`;
+  } else {
+    $('spoil-label').textContent = '';
+  }
+
+  $('btn-plow').disabled = state.plowed || state.seasonIdx !== 0;
+  $('btn-harvest').disabled = state.harvested || state.seasonIdx !== 2;
+  $('btn-sell').disabled = state.grain <= 0;
+  $('btn-bribe').disabled = state.rubles < 2;
+
+  const ur = $('upgrades-row');
+  ur.innerHTML = '';
+  if (state.upgrades.hardySeeds) ur.innerHTML += '<span class="badge">🌿 Hardy Seeds</span>';
+  if (state.upgrades.sunflower)  ur.innerHTML += '<span class="badge">🌻 Sunflower Crop</span>';
+  if (state.upgrades.cellar)     ur.innerHTML += '<span class="badge">🏚️ Root Cellar</span>';
+  if (state.upgrades.ox)         ur.innerHTML += '<span class="badge">🐂 Two Oxen</span>';
+  if (state.extraPlots > 0)      ur.innerHTML += `<span class="badge">🌍 +${state.extraPlots} plots</span>`;
+
+  const sg = $('shop-grid');
+  sg.innerHTML = '';
+  SHOP_ITEMS.forEach(item => {
+    const canBuy = item.canBuy(state);
+    const label = item.label(state);
+    const owned = label === 'Owned' || label === '(winter only)';
+    const btn = document.createElement('button');
+    btn.className = 'shop-btn';
+    btn.disabled = !canBuy;
+    btn.innerHTML = `<div style="font-size:20px;margin-bottom:4px">${item.icon}</div><div class="btn-title">${item.title}</div><div class="btn-desc">${item.desc}</div><div class="btn-cost">${label}</div>`;
+    btn.onclick = () => {
+      item.buy(state);
+      log('You bought: ' + item.title + ' ' + item.icon, 'good');
+      checkDeath(); render();
+    };
+    sg.appendChild(btn);
+  });
+}
+
+function log(msg, type='') {
+  const el = $('log');
+  el.textContent = msg;
+  el.className = 'log ' + type;
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['farm','shop'][i]===tab));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  $('panel-'+tab).classList.add('active');
+}
+
+function plow() {
+  if (state.plowed || state.seasonIdx !== 0) return;
+  const cost = state.upgrades.ox ? 5 : 10;
+  state.health -= cost;
+  state.plots = Array(totalPlots(state)).fill('planted');
+  state.plowed = true;
+  log(`You ${state.upgrades.ox ? 'easily' : 'painfully'} plow all ${totalPlots(state)} plots. 🐂`, 'good');
+  checkDeath(); render();
+}
+
+function harvest() {
+  if (state.harvested || state.seasonIdx !== 2) return;
+  const grown = state.plots.filter(p => p === 'grown').length;
+  const perPlot = state.upgrades.sunflower ? 5 : 3;
+  const gained = grown * perPlot;
+  state.grain += gained;
+  state.grainAge = 0;
+  state.health -= 8;
+  state.harvested = true;
+  state.plots = Array(totalPlots(state)).fill('empty');
+  log(`Harvest! ${grown} plots × ${perPlot} = ${gained} grain gathered. 🌾`, gained > 0 ? 'good' : 'bad');
+  checkDeath(); render();
+}
+
+function sell() {
+  if (state.grain <= 0) return;
+  const amt = Math.floor(state.grain / 2);
+  const price = state.grainAge > 0 ? Math.ceil(amt * 0.5) : amt;
+  state.rubles += price;
+  state.grain -= amt;
+  if (state.grainAge > 0) log(`Sold ${amt} aged grain for only ${price} rubles (half price). 📉`);
+  else log(`Sold ${amt} fresh grain for ${price} rubles. 💰`, 'good');
+  render();
+}
+
+function rest() {
+  state.health = Math.min(100, state.health + 15);
+  state.grain -= 2;
+  if (state.grain < 0) { state.grain = 0; state.health -= 10; log('No grain to eat! You starve through the night. 😩', 'bad'); }
+  else log('You rest and eat. Health restored a little. 🛏️', 'good');
+  checkDeath(); render();
+}
+
+function bribe() {
+  if (state.rubles < 2) return;
+  state.rubles -= 2;
+  state.taxDue = Math.max(0, state.taxDue - 4);
+  log('You slip rubles to the local official. He looks away. 🤫', 'good');
+  render();
+}
+
+function endSeason() {
+  state.seasonIdx = (state.seasonIdx + 1) % 4;
+
+  if (state.seasonIdx === 1) {
+    state.plots = state.plots.map(p => p === 'planted' ? 'grown' : p);
+    log('Summer. Your crops grow tall in the fields. ☀️', 'good');
+  }
+
+  if (state.seasonIdx === 2) {
+    const blightChance = state.upgrades.hardySeeds ? 0.15 : 0.30;
+    if (Math.random() < blightChance) {
+      state.plots = Array(totalPlots(state)).fill('empty');
+      log('Blight! Your entire crop is destroyed. 🪲', 'bad');
+    } else {
+      log('Autumn arrives. Your crops survived — time to harvest! 🍂');
+    }
+  }
+
+  if (state.seasonIdx === 3) {
+    const tax = 5 + state.year * 2;
+    state.taxDue = tax; state.taxPaid = 0;
+    if (state.rubles >= tax) {
+      state.rubles -= tax; state.taxPaid = tax;
+      log(`The tax collector takes ${tax} rubles. You pay in full. ❄️`);
+    } else {
+      const shortfall = tax - state.rubles;
+      state.rubles = 0; state.taxPaid = tax - shortfall;
+      state.health -= shortfall * 5;
+      log(`Can't pay! Overseer beats you for ${shortfall} missing rubles. 😰`, 'bad');
+    }
+    if (state.grain < 4) { state.health -= 20; log('Almost no grain in winter. You go very hungry. ❄️😢', 'bad'); }
+
+    const maxAge = state.upgrades.cellar ? 3 : 1;
+    state.grainAge++;
+    if (state.grainAge > maxAge && state.grain > 0) {
+      const spoiled = Math.ceil(state.grain * 0.6);
+      state.grain = Math.max(0, state.grain - spoiled);
+      log(`Your grain has rotted! ${spoiled} grain spoiled without a root cellar. 🤢`, 'bad');
+    }
+  }
+
+  if (state.seasonIdx === 0) {
+    state.year++;
+    state.plowed = false; state.harvested = false;
+    state.health = Math.max(10, state.health - 5);
+    if (state.plots.length !== totalPlots(state)) state.plots = Array(totalPlots(state)).fill('empty');
+    if (state.year > 10) { showModal('🎉 Freedom!', `You survived 10 years of serfdom with ${state.grain} grain and ${state.rubles} rubles!`, 'Play Again', freshState); return; }
+    log(`Year ${state.year} begins. Spring again. 🌱`);
+  }
+
+  checkDeath(); render();
+}
+
+function checkDeath() {
+  if (state.health <= 0 && !state.dead) {
+    state.dead = true;
+    showModal('💀 You Died', `You survived ${state.year} year${state.year>1?'s':''} as a serf. The earth reclaims you.`, 'Try Again', freshState);
+  }
+}
+
+function showModal(title, body, btn, resetFn) {
+  const w = $('field-wrapper');
+  const existing = w.querySelector('.overlay');
+  if (existing) existing.remove();
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `<div class="modal"><h3>${title}</h3><p>${body}</p><button onclick="this.closest('.overlay').remove(); state=freshState(); render();">${btn}</button></div>`;
+  w.appendChild(ov);
+}
+
+render();
+</script>
