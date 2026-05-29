@@ -1,199 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌾 Serf Life</title>
+<link href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-#wrap{padding:1rem;max-width:640px;margin:0 auto;font-family:var(--font-sans);}
-h2{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px;}
-.sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem;}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;}
-.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 8px;text-align:center;}
-.stat-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:2px;}
-.stat-val{font-size:20px;color:var(--color-text-primary);}
-.season-badge{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px;}
-.tax-bar{height:6px;background:var(--color-background-secondary);border-radius:3px;margin-bottom:10px;overflow:hidden;}
-.tax-fill{height:100%;background:#E24B4A;border-radius:3px;transition:width .4s;}
-.field{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:12px;margin-bottom:10px;}
+:root {
+  --bg:#1a1208;--bg2:#241a0e;--bg3:#2e2212;--bg4:#3a2c18;--card:#2a1e0f;
+  --border:#5a3e20;--border2:#7a5630;
+  --gold:#d4a843;--gold-light:#f0c96a;--gold-dim:#8a6820;
+  --red:#c0392b;--red-light:#e74c3c;
+  --green:#5a8a2a;--green-light:#7ab840;
+  --blue:#2a6a9a;--blue-light:#4a9acd;
+  --text:#f0e0c0;--text2:#c0a070;--text3:#8a6840;
+  --shadow:0 4px 20px rgba(0,0,0,.6);
+  --inset:inset 0 1px 0 rgba(255,220,140,.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% -20%,rgba(100,60,10,.35) 0%,transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='80' height='80' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  font-family:'Crimson Pro',Georgia,serif;
+  color:var(--text);min-height:100vh;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:2rem 1rem 4rem;
+}
+#wrap{width:100%;max-width:620px;}
+.game-header{text-align:center;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);}
+.game-header h1{font-family:'Uncial Antiqua',serif;font-size:2.2rem;color:var(--gold);text-shadow:0 0 30px rgba(212,168,67,.4),0 2px 4px rgba(0,0,0,.8);letter-spacing:.03em;margin-bottom:.2rem;}
+.game-header .sub{font-style:italic;color:var(--text3);font-size:1rem;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 6px;text-align:center;box-shadow:var(--inset),var(--shadow);}
+.stat-label{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;}
+.stat-val{font-size:1.5rem;color:var(--gold-light);line-height:1;}
+.season-badge{font-size:.85rem;color:var(--text2);margin-bottom:5px;}
+.tax-bar{height:5px;background:var(--bg3);border-radius:3px;margin-bottom:10px;overflow:hidden;border:1px solid var(--border);}
+.tax-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--red-light));border-radius:3px;transition:width .4s;}
+.upgrades-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;min-height:8px;}
+.badge{font-size:.72rem;background:var(--bg3);border:1px solid var(--border);border-radius:99px;padding:2px 10px;color:var(--gold-dim);}
+.field-wrapper{position:relative;margin-bottom:12px;}
+.field{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;box-shadow:var(--inset),var(--shadow);}
 .field-row{display:flex;flex-wrap:wrap;gap:5px;font-size:22px;}
-.plot{padding:2px;border-radius:4px;user-select:none;}
+.plot{user-select:none;}
+.spoil-label{font-size:.72rem;color:var(--red-light);margin-top:6px;min-height:14px;}
 .tabs{display:flex;gap:6px;margin-bottom:10px;}
-.tab{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:6px 14px;cursor:pointer;font-size:13px;color:var(--color-text-secondary);}
-.tab.active{background:var(--color-background-primary);border-color:var(--color-border-primary);color:var(--color-text-primary);font-weight:500;}
+.tab{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 16px;cursor:pointer;font-family:'Crimson Pro',serif;font-size:.95rem;color:var(--text3);transition:all .15s;}
+.tab:hover{border-color:var(--border2);color:var(--text2);}
+.tab.active{background:linear-gradient(160deg,var(--bg4),var(--bg3));border-color:var(--gold-dim);color:var(--gold);box-shadow:0 0 12px rgba(212,168,67,.12);}
 .panel{display:none;}.panel.active{display:block;}
 .actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
 .shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-button{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:10px 6px;cursor:pointer;font-size:13px;color:var(--color-text-primary);transition:background .15s;width:100%;}
-button:hover:not(:disabled){background:var(--color-background-secondary);}
-button:disabled{opacity:.38;cursor:default;}
-.btn-icon{font-size:18px;display:block;margin-bottom:2px;}
-.shop-btn{text-align:left;padding:10px 12px;}
-.shop-btn .btn-title{font-size:13px;font-weight:500;color:var(--color-text-primary);}
-.shop-btn .btn-desc{font-size:11px;color:var(--color-text-secondary);margin-top:2px;}
-.shop-btn .btn-cost{font-size:12px;color:var(--color-text-secondary);margin-top:4px;}
-.log{background:var(--color-background-secondary);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:10px 12px;font-size:13px;color:var(--color-text-secondary);min-height:38px;border-left:3px solid var(--color-border-tertiary);margin-top:10px;}
-.log.bad{border-left-color:#E24B4A;color:var(--color-text-danger);}
-.log.good{border-left-color:#639922;color:var(--color-text-success);}
-.spoil-label{font-size:10px;color:var(--color-text-secondary);margin-top:4px;}
-.upgrades-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
-.badge{font-size:11px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:99px;padding:2px 8px;color:var(--color-text-secondary);}
-.wrapper{position:relative;}
+button{background:linear-gradient(160deg,var(--bg4) 0%,var(--bg3) 100%);border:1px solid var(--border);border-radius:8px;padding:10px 6px;cursor:pointer;font-family:'Crimson Pro',serif;font-size:.95rem;color:var(--text);transition:all .15s;width:100%;box-shadow:var(--inset),0 2px 8px rgba(0,0,0,.4);}
+button:hover:not(:disabled){background:linear-gradient(160deg,#4a3420 0%,var(--bg4) 100%);border-color:var(--border2);color:var(--gold-light);box-shadow:var(--inset),0 2px 14px rgba(212,168,67,.15);transform:translateY(-1px);}
+button:active:not(:disabled){transform:translateY(0);}
+button:disabled{opacity:.3;cursor:default;}
+.btn-icon{font-size:18px;display:block;margin-bottom:3px;}
+.shop-btn{text-align:left;padding:12px 14px;}
+.shop-btn .btn-title{font-size:.95rem;font-weight:600;color:var(--text);}
+.shop-btn .btn-desc{font-size:.78rem;color:var(--text3);margin-top:2px;line-height:1.4;}
+.shop-btn .btn-cost{font-size:.8rem;color:var(--gold-dim);margin-top:5px;}
+.log{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--border2);border-radius:0 8px 8px 0;padding:10px 14px;font-size:.95rem;color:var(--text2);font-style:italic;min-height:40px;margin-top:10px;box-shadow:var(--shadow);}
+.log.bad{border-left-color:var(--red-light);color:#e08070;}
+.log.good{border-left-color:var(--green-light);color:#a0d060;}
+.g-overlay{position:absolute;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;border-radius:10px;z-index:10;}
+.g-modal{background:var(--card);border:1px solid var(--gold-dim);border-radius:12px;padding:2rem 1.5rem;text-align:center;max-width:280px;box-shadow:0 0 40px rgba(212,168,67,.2),var(--shadow);}
+.g-modal h3{font-family:'Uncial Antiqua',serif;font-size:1.4rem;color:var(--gold);margin-bottom:8px;}
+.g-modal p{font-size:.95rem;color:var(--text2);margin-bottom:1.25rem;font-style:italic;}
+.g-modal button{width:auto;padding:8px 24px;font-size:1rem;}
 
-/* Planting modal */
-.plant-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center;}
-.plant-modal-bg.open{display:flex;}
-.plant-modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:1.25rem;width:min(420px,92vw);max-height:90vh;overflow-y:auto;}
-.pm-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
-.pm-title{font-size:15px;font-weight:500;color:var(--color-text-primary);}
-.pm-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--color-text-secondary);width:auto;padding:0 4px;}
-.pm-sub{font-size:12px;color:var(--color-text-secondary);margin-bottom:12px;}
-.pm-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
-.pm-legend-item{font-size:11px;color:var(--color-text-secondary);display:flex;align-items:center;gap:4px;}
-.pm-controls{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;}
-.pm-controls label{font-size:12px;color:var(--color-text-secondary);}
-.pm-controls select{font-size:12px;padding:4px 8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;}
-.pm-timer{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-left:auto;}
-.pm-timer.urgent{color:#E24B4A;}
-.pm-progress{height:5px;background:var(--color-background-secondary);border-radius:3px;margin-bottom:10px;overflow:hidden;}
-.pm-progress-fill{height:100%;background:#639922;border-radius:3px;transition:width .15s;}
-.pm-grid-wrap{display:inline-grid;gap:5px;margin-bottom:10px;}
-.pm-cell{width:42px;height:42px;border-radius:7px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;transition:transform .1s,background .1s;user-select:none;}
-.pm-cell:hover:not(.done){transform:scale(1.1);background:var(--color-background-primary);}
-.pm-cell.done{cursor:default;}
-.pm-stats{display:flex;gap:14px;font-size:12px;color:var(--color-text-secondary);margin-bottom:10px;}
-.pm-result{font-size:13px;padding:8px 12px;border-left:3px solid #639922;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;background:var(--color-background-secondary);color:var(--color-text-secondary);margin-bottom:10px;display:none;}
-.pm-result.bad{border-left-color:#E24B4A;}
-.pm-footer{display:flex;gap:8px;}
-.pm-footer button{width:auto;padding:7px 18px;font-size:13px;}
+/* ---- SHARED MODAL SHELL ---- */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:100;align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal-box{background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:1.5rem;width:min(460px,96vw);max-height:92vh;overflow-y:auto;box-shadow:0 0 60px rgba(0,0,0,.85),0 0 30px rgba(212,168,67,.1);}
+.mhdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.mtitle{font-family:'Uncial Antiqua',serif;font-size:1.2rem;color:var(--gold);}
+.mclose{background:var(--bg3);border:1px solid var(--border);border-radius:6px;font-size:1rem;cursor:pointer;color:var(--text3);width:auto;padding:2px 8px;box-shadow:none;}
+.mclose:hover:not(:disabled){color:var(--red-light);border-color:var(--red);background:var(--bg3);transform:none;box-shadow:none;}
+.msub{font-size:.85rem;color:var(--text3);margin-bottom:10px;font-style:italic;}
+.mlegend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;padding:8px 12px;background:var(--bg3);border-radius:7px;border:1px solid var(--border);}
+.mlegend span{font-size:.8rem;color:var(--text2);}
+.mcontrols{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;}
+.mcontrols label{font-size:.85rem;color:var(--text2);}
+.mcontrols select{font-size:.85rem;padding:5px 10px;border-radius:7px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);cursor:pointer;font-family:'Crimson Pro',serif;}
+.mtimer{font-size:.95rem;font-weight:600;color:var(--text2);margin-left:auto;}
+.mtimer.urgent{color:var(--red-light);}
+.mprog-wrap{height:5px;background:var(--bg3);border-radius:3px;margin-bottom:12px;overflow:hidden;border:1px solid var(--border);}
+.mprog-fill{height:100%;border-radius:3px;transition:width .15s;}
+.mprog-fill.green{background:linear-gradient(90deg,var(--green),var(--green-light));}
+.mprog-fill.gold{background:linear-gradient(90deg,var(--gold-dim),var(--gold));}
+.mgrid-wrap{display:flex;justify-content:center;margin-bottom:10px;}
+.mgrid{display:inline-grid;gap:5px;}
+.mcell{width:44px;height:44px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;transition:transform .1s,border-color .1s,background .1s;user-select:none;box-shadow:var(--inset);}
+.mcell:hover:not(.done){transform:scale(1.12);border-color:var(--gold-dim);background:var(--bg4);}
+.mcell.done{cursor:default;}
+.mstats{display:flex;gap:16px;font-size:.85rem;color:var(--text3);margin-bottom:10px;}
+.mresult{font-size:.9rem;padding:9px 13px;border-left:3px solid var(--green);border-radius:0 7px 7px 0;background:var(--bg3);color:var(--text2);margin-bottom:10px;display:none;font-style:italic;}
+.mresult.bad{border-left-color:var(--red-light);}
+.mfooter{display:flex;gap:8px;}
+.mfooter button{width:auto;padding:7px 20px;font-size:.95rem;}
 
-/* Game over / win overlay */
-.g-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;border-radius:var(--border-radius-lg);z-index:10;}
-.g-modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);padding:1.5rem;text-align:center;max-width:280px;border:0.5px solid var(--color-border-tertiary);}
-.g-modal h3{font-size:18px;font-weight:500;margin-bottom:8px;color:var(--color-text-primary);}
-.g-modal p{font-size:14px;color:var(--color-text-secondary);margin-bottom:1rem;}
+/* ---- HARVEST MINIGAME ---- */
+.harvest-lane{position:relative;height:70px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px;cursor:pointer;user-select:none;}
+.harvest-lane:active{opacity:.9;}
+.harvest-track{position:absolute;top:50%;transform:translateY(-50%);left:0;right:0;height:4px;background:var(--border);}
+.harvest-zone{position:absolute;top:50%;transform:translateY(-50%);height:30px;background:rgba(90,138,42,.35);border:1px solid var(--green);border-radius:4px;transition:left .05s;}
+.harvest-needle{position:absolute;top:50%;transform:translateY(-50%) translateX(-50%);width:3px;height:52px;background:var(--gold-light);border-radius:2px;box-shadow:0 0 8px rgba(240,201,106,.6);transition:left .02s linear;}
+.harvest-crop-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;font-size:20px;min-height:30px;}
+.harvest-crop{cursor:pointer;padding:2px;border-radius:4px;transition:transform .08s;user-select:none;border:1px solid transparent;}
+.harvest-crop:hover{transform:scale(1.15);}
+.harvest-crop.harvested{opacity:.3;cursor:default;}
+.harvest-crop.harvested:hover{transform:none;}
+.hv-info{font-size:.82rem;color:var(--text3);margin-bottom:8px;font-style:italic;}
 
-/* Guide */
-.guide{margin-top:2rem;border-top:0.5px solid var(--color-border-tertiary);padding-top:1.5rem;}
-.guide-title{font-size:16px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px;}
-.guide-sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:1.25rem;}
+/* ---- GUIDE ---- */
+.guide{margin-top:2.5rem;border-top:1px solid var(--border);padding-top:1.75rem;}
+.guide-title{font-family:'Uncial Antiqua',serif;font-size:1.3rem;color:var(--gold);text-shadow:0 0 20px rgba(212,168,67,.3);margin-bottom:4px;}
+.guide-sub{font-size:.9rem;color:var(--text3);margin-bottom:1.25rem;font-style:italic;}
 .guide-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.guide-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;}
-.guide-card .gc-icon{font-size:22px;margin-bottom:6px;}
-.guide-card .gc-head{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px;}
-.guide-card .gc-body{font-size:12px;color:var(--color-text-secondary);line-height:1.6;}
+.guide-card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:14px;box-shadow:var(--inset),var(--shadow);}
+.gc-icon{font-size:1.5rem;margin-bottom:6px;}
+.gc-head{font-size:.95rem;font-weight:600;color:var(--gold-dim);margin-bottom:5px;}
+.gc-body{font-size:.82rem;color:var(--text3);line-height:1.65;}
+.gc-body b{color:var(--text2);font-weight:600;}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 </style>
-
+</head>
+<body>
 <div id="wrap">
-<h2>🌾 Serf Life</h2>
-<p class="sub">Russia, 1820 — survive the seasons, serve the Tsar.</p>
-
-<div class="stats">
-  <div class="stat"><div class="stat-label">Grain 🌾</div><div class="stat-val" id="s-grain">10</div></div>
-  <div class="stat"><div class="stat-label">Rubles 💰</div><div class="stat-val" id="s-rubles">3</div></div>
-  <div class="stat"><div class="stat-label">Health ❤️</div><div class="stat-val" id="s-health">100</div></div>
-  <div class="stat"><div class="stat-label">Year 📅</div><div class="stat-val" id="s-year">1</div></div>
-</div>
-
-<div class="season-badge" id="season-label">🌱 Spring — plant your crops</div>
-<div class="tax-bar"><div class="tax-fill" id="tax-fill" style="width:0%"></div></div>
-<div class="upgrades-row" id="upgrades-row"></div>
-
-<div class="wrapper" id="field-wrapper">
-  <div class="field">
-    <div class="field-row" id="field"></div>
-    <div class="spoil-label" id="spoil-label"></div>
+  <div class="game-header">
+    <h1>🌾 Serf Life</h1>
+    <p class="sub">Russia, 1820 — survive the seasons, serve the Tsar</p>
   </div>
-</div>
 
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('farm')">🌾 Farm</div>
-  <div class="tab" onclick="switchTab('shop')">🏪 Market</div>
-</div>
-<div id="panel-farm" class="panel active">
-  <div class="actions">
-    <button id="btn-plow" onclick="openPlantModal()"><span class="btn-icon">🐂</span>Plow & Plant</button>
-    <button id="btn-harvest" onclick="harvest()"><span class="btn-icon">🌾</span>Harvest</button>
-    <button id="btn-sell" onclick="sell()"><span class="btn-icon">🛒</span>Sell Grain</button>
-    <button id="btn-rest" onclick="rest()"><span class="btn-icon">🛏️</span>Rest</button>
-    <button id="btn-bribe" onclick="bribe()"><span class="btn-icon">🤫</span>Bribe Official</button>
-    <button id="btn-endseason" onclick="endSeason()"><span class="btn-icon">⏭️</span>Next Season</button>
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Grain 🌾</div><div class="stat-val" id="s-grain">10</div></div>
+    <div class="stat"><div class="stat-label">Rubles 💰</div><div class="stat-val" id="s-rubles">3</div></div>
+    <div class="stat"><div class="stat-label">Health ❤️</div><div class="stat-val" id="s-health">100</div></div>
+    <div class="stat"><div class="stat-label">Year 📅</div><div class="stat-val" id="s-year">1</div></div>
   </div>
-</div>
-<div id="panel-shop" class="panel">
-  <div class="shop-grid" id="shop-grid"></div>
-</div>
 
-<div class="log" id="log">You wake to frozen ground. Another year begins.</div>
+  <div class="season-badge" id="season-label">🌱 Spring — plant your crops</div>
+  <div class="tax-bar"><div class="tax-fill" id="tax-fill" style="width:0%"></div></div>
+  <div class="upgrades-row" id="upgrades-row"></div>
 
-<!-- GUIDE -->
-<div class="guide">
-  <div class="guide-title">📖 How to play</div>
-  <div class="guide-sub">You are a serf in 1820s Russia. Survive 10 years to earn your freedom.</div>
-  <div class="guide-grid">
-    <div class="guide-card"><div class="gc-icon">🌱</div><div class="gc-head">Spring — plow & plant</div><div class="gc-body">Press <b>Plow & Plant</b> to open the planting minigame. Match seeds to soil to fill more plots. Better performance = more grain at harvest.</div></div>
-    <div class="guide-card"><div class="gc-icon">☀️</div><div class="gc-head">Summer — wait & tend</div><div class="gc-body">Hit <b>Next Season</b> to advance. Crops grow on their own. Rest, sell old grain, or save rubles for market upgrades.</div></div>
-    <div class="guide-card"><div class="gc-icon">🍂</div><div class="gc-head">Autumn — harvest fast</div><div class="gc-body">Hit <b>Harvest</b> immediately. Blight can destroy crops (30% chance). Sell half your grain for rubles before winter taxes arrive.</div></div>
-    <div class="guide-card"><div class="gc-icon">❄️</div><div class="gc-head">Winter — pay or suffer</div><div class="gc-body">The tax collector comes. You need rubles (5 + 2×year). Missing coins = beatings = health loss. Keep 4+ grain to avoid starving.</div></div>
-    <div class="guide-card"><div class="gc-icon">🏪</div><div class="gc-head">Market upgrades</div><div class="gc-body">Buy more land, better seeds, a root cellar (stops grain rotting), a second ox (saves health plowing), or vodka to heal fast.</div></div>
-    <div class="guide-card"><div class="gc-icon">🌱</div><div class="gc-head">Planting minigame</div><div class="gc-body">Match seed to soil type: sandy 🟤→wheat, rich 🟫→sunflower, dark ⬛→carrot. Every correct patch plants a real plot. Be fast!</div></div>
-  </div>
-</div>
-</div>
-
-<!-- PLANTING MODAL (fixed, outside wrap) -->
-<div class="plant-modal-bg" id="plant-modal-bg">
-  <div class="plant-modal">
-    <div class="pm-header">
-      <div>
-        <div class="pm-title">🐂 Plow & Plant</div>
-      </div>
-      <button class="pm-close" onclick="closePlantModal()">✕</button>
+  <div class="field-wrapper" id="field-wrapper">
+    <div class="field">
+      <div class="field-row" id="field"></div>
+      <div class="spoil-label" id="spoil-label"></div>
     </div>
-    <div class="pm-sub">Match the right seed to each soil patch before time runs out. Every correct patch plants one field plot!</div>
-    <div class="pm-legend">
-      <span class="pm-legend-item">🟤 Sandy → 🌾 Wheat</span>
-      <span class="pm-legend-item">🟫 Rich → 🌻 Sunflower</span>
-      <span class="pm-legend-item">⬛ Dark → 🥕 Carrot</span>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('farm')">🌾 Farm</div>
+    <div class="tab" onclick="switchTab('shop')">🏪 Market</div>
+  </div>
+
+  <div id="panel-farm" class="panel active">
+    <div class="actions">
+      <button id="btn-plow"    onclick="openPlantModal()"><span class="btn-icon">🐂</span>Plow & Plant</button>
+      <button id="btn-harvest" onclick="openHarvestModal()"><span class="btn-icon">🌾</span>Harvest</button>
+      <button id="btn-sell"    onclick="sell()"><span class="btn-icon">🛒</span>Sell Grain</button>
+      <button id="btn-rest"    onclick="rest()"><span class="btn-icon">🛏️</span>Rest</button>
+      <button id="btn-bribe"   onclick="bribe()"><span class="btn-icon">🤫</span>Bribe Official</button>
+      <button id="btn-endseason" onclick="endSeason()"><span class="btn-icon">⏭️</span>Next Season</button>
     </div>
-    <div class="pm-controls">
+  </div>
+
+  <div id="panel-shop" class="panel">
+    <div class="shop-grid" id="shop-grid"></div>
+  </div>
+
+  <div class="log" id="log">You wake to frozen ground. Another year begins.</div>
+
+  <div class="guide">
+    <div class="guide-title">📖 How to Play</div>
+    <div class="guide-sub">You are a serf in 1820s Russia. Survive 10 years to earn your freedom.</div>
+    <div class="guide-grid">
+      <div class="guide-card"><div class="gc-icon">🌱</div><div class="gc-head">Spring — Plow & Plant</div><div class="gc-body">Press <b>Plow & Plant</b> to open the planting minigame. Match seeds to soil types. Every correct patch plants one field plot!</div></div>
+      <div class="guide-card"><div class="gc-icon">☀️</div><div class="gc-head">Summer — Wait & Tend</div><div class="gc-body">Hit <b>Next Season</b> to advance. Crops grow on their own. Rest to recover health, sell old grain, or save rubles for upgrades.</div></div>
+      <div class="guide-card"><div class="gc-icon">🍂</div><div class="gc-head">Autumn — Harvest Timing</div><div class="gc-body">Press <b>Harvest</b> to open the harvest minigame. Stop the swinging needle in the golden zone — then click each crop to collect it!</div></div>
+      <div class="guide-card"><div class="gc-icon">❄️</div><div class="gc-head">Winter — Pay or Suffer</div><div class="gc-body">The tax collector comes. You need rubles <b>(5 + 2×year)</b>. Missing coins = beatings. Keep 4+ grain to avoid starving.</div></div>
+      <div class="guide-card"><div class="gc-icon">🏪</div><div class="gc-head">Market Upgrades</div><div class="gc-body">Buy land, seeds, tools and consumables to make farming easier and more profitable each year.</div></div>
+      <div class="guide-card"><div class="gc-icon">⚡</div><div class="gc-head">Random Events</div><div class="gc-body">Each season can bring surprise events — good or <b>very bad</b>. In early years: rats, illness, small windfalls. From year 3: <b>thieves, soldiers, floods</b>. From year 6: <b>bandits stealing everything, barn fires, Cossack raids</b>. Stay stocked up.</div></div>
+      <div class="guide-card"><div class="gc-icon">⚡</div><div class="gc-head">Harvest Minigame</div><div class="gc-body">A needle swings left and right. Click when it's inside the <b>green zone</b> to unlock a bonus multiplier. Then click each crop stalk to collect it. Miss the zone and get a penalty!</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PLANTING MODAL -->
+<div class="modal-bg" id="plant-modal-bg">
+  <div class="modal-box">
+    <div class="mhdr">
+      <div class="mtitle">🐂 Plow & Plant</div>
+      <button class="mclose" onclick="closePlantModal()">✕</button>
+    </div>
+    <div class="msub">Match the right seed to each soil patch before time runs out. Every correct patch plants one field plot!</div>
+    <div class="mlegend">
+      <span>🟤 Sandy → 🌾 Wheat</span>
+      <span>🟫 Rich → 🌻 Sunflower</span>
+      <span>⬛ Dark → 🥕 Carrot</span>
+    </div>
+    <div class="mcontrols">
       <label>Seed:</label>
       <select id="pm-seed">
         <option value="🌾">🌾 Wheat</option>
         <option value="🌻">🌻 Sunflower</option>
         <option value="🥕">🥕 Carrot</option>
       </select>
-      <span class="pm-timer" id="pm-timer"></span>
+      <span class="mtimer" id="pm-timer"></span>
     </div>
-    <div class="pm-progress"><div class="pm-progress-fill" id="pm-prog" style="width:0%"></div></div>
-    <div id="pm-grid-wrap" style="display:flex;justify-content:center;margin-bottom:10px;"></div>
-    <div class="pm-stats">
+    <div class="mprog-wrap"><div class="mprog-fill green" id="pm-prog" style="width:0%"></div></div>
+    <div class="mgrid-wrap" id="pm-grid-wrap">
+      <div style="font-size:.9rem;color:#8a6840;padding:20px 0;font-style:italic;">Press ▶ Start plowing to begin!</div>
+    </div>
+    <div class="mstats">
       <span>✅ <span id="pm-correct">0</span> correct</span>
       <span>❌ <span id="pm-wrong">0</span> wrong</span>
       <span>🌱 <span id="pm-planted">0</span> plots planted</span>
     </div>
-    <div class="pm-result" id="pm-result"></div>
-    <div class="pm-footer">
+    <div class="mresult" id="pm-result"></div>
+    <div class="mfooter">
       <button id="pm-start-btn" onclick="startPlanting()">▶ Start plowing</button>
       <button id="pm-done-btn" onclick="closePlantModal()" style="display:none;">✓ Done</button>
     </div>
   </div>
 </div>
 
+<!-- HARVEST MODAL -->
+<div class="modal-bg" id="harvest-modal-bg">
+  <div class="modal-box">
+    <div class="mhdr">
+      <div class="mtitle">🌾 Harvest Time</div>
+      <button class="mclose" onclick="closeHarvestModal()">✕</button>
+    </div>
+    <div class="msub" id="hv-sub">Stop the needle in the golden zone, then click each crop to collect it!</div>
+
+    <!-- Timing bar -->
+    <div class="harvest-lane" id="hv-lane">
+      <div class="harvest-track"></div>
+      <div class="harvest-zone" id="hv-zone"></div>
+      <div class="harvest-needle" id="hv-needle" style="left:50%"></div>
+    </div>
+
+    <div class="hv-info" id="hv-info">Click the bar above to stop the needle — try to land in the green zone!</div>
+    <div class="mprog-wrap"><div class="mprog-fill gold" id="hv-prog" style="width:0%"></div></div>
+
+    <!-- Crop row -->
+    <div class="harvest-crop-row" id="hv-crops"></div>
+
+    <div class="mstats">
+      <span>🌾 <span id="hv-collected">0</span> collected</span>
+      <span>⭐ Bonus: <span id="hv-bonus">×1.0</span></span>
+      <span>📦 Total: <span id="hv-total">0</span> grain</span>
+    </div>
+    <div class="mresult" id="hv-result"></div>
+    <div class="mfooter">
+      <button id="hv-start-btn" onclick="startHarvest()">▶ Begin harvest</button>
+      <button id="hv-done-btn" onclick="closeHarvestModal()" style="display:none;">✓ Done</button>
+    </div>
+  </div>
+</div>
+
 <script>
+/* ===================== GAME STATE ===================== */
 const SEASONS=['🌱 Spring','☀️ Summer','🍂 Autumn','❄️ Winter'];
-const HINTS=['plant your crops','tend the fields','harvest & prepare','survive and pray'];
+const HINTS=['plant your crops','tend the fields','harvest the crops','survive and pray'];
+
 const SHOP_ITEMS=[
-  {id:'land1',icon:'🌍',title:'Extra Plot (4)',desc:'Buy 4 more farm plots',canBuy:s=>s.rubles>=6&&s.extraPlots<12,buy:s=>{s.rubles-=6;s.extraPlots+=4;},label:s=>s.extraPlots>=12?'Max land':'Buy (6💰)'},
-  {id:'land2',icon:'🗺️',title:'Large Field (+8)',desc:'8 more plots, great yield',canBuy:s=>s.rubles>=14&&s.extraPlots<12,buy:s=>{s.rubles-=14;s.extraPlots=Math.min(12,s.extraPlots+8);},label:s=>s.extraPlots>=12?'Max land':'Buy (14💰)'},
+  // LAND
+  {id:'land1',icon:'🌍',title:'Extra Plots (4)',desc:'4 more farm plots to plant',canBuy:s=>s.rubles>=6&&s.extraPlots<16,buy:s=>{s.rubles-=6;s.extraPlots+=4;},label:s=>s.extraPlots>=16?'Max land':'Buy (6💰)'},
+  {id:'land2',icon:'🗺️',title:'Large Field (+8)',desc:'8 more plots — big yields',canBuy:s=>s.rubles>=14&&s.extraPlots<16,buy:s=>{s.rubles-=14;s.extraPlots=Math.min(16,s.extraPlots+8);},label:s=>s.extraPlots>=16?'Max land':'Buy (14💰)'},
+  // SEEDS
   {id:'seed1',icon:'🌿',title:'Hardy Seeds',desc:'Blight chance 30%→15%',canBuy:s=>s.rubles>=5&&!s.upgrades.hardySeeds,buy:s=>{s.rubles-=5;s.upgrades.hardySeeds=true;},label:s=>s.upgrades.hardySeeds?'Owned':'Buy (5💰)'},
   {id:'seed2',icon:'🌻',title:'Sunflower Crop',desc:'+2 grain per plot at harvest',canBuy:s=>s.rubles>=8&&!s.upgrades.sunflower,buy:s=>{s.rubles-=8;s.upgrades.sunflower=true;},label:s=>s.upgrades.sunflower?'Owned':'Buy (8💰)'},
-  {id:'barn',icon:'🏚️',title:'Root Cellar',desc:'Grain spoils after 3 seasons',canBuy:s=>s.rubles>=7&&!s.upgrades.cellar,buy:s=>{s.rubles-=7;s.upgrades.cellar=true;},label:s=>s.upgrades.cellar?'Owned':'Buy (7💰)'},
+  {id:'seed3',icon:'🌽',title:'Maize Seed',desc:'Double grain but needs 2× health to harvest',canBuy:s=>s.rubles>=12&&!s.upgrades.maize,buy:s=>{s.rubles-=12;s.upgrades.maize=true;},label:s=>s.upgrades.maize?'Owned':'Buy (12💰)'},
+  // TOOLS
   {id:'ox',icon:'🐂',title:'Second Ox',desc:'Plowing costs 5 health not 10',canBuy:s=>s.rubles>=10&&!s.upgrades.ox,buy:s=>{s.rubles-=10;s.upgrades.ox=true;},label:s=>s.upgrades.ox?'Owned':'Buy (10💰)'},
+  {id:'scythe',icon:'⚔️',title:'Steel Scythe',desc:'Harvest zone 40% wider — easier timing',canBuy:s=>s.rubles>=9&&!s.upgrades.scythe,buy:s=>{s.rubles-=9;s.upgrades.scythe=true;},label:s=>s.upgrades.scythe?'Owned':'Buy (9💰)'},
+  {id:'cart',icon:'🛕',title:'Grain Cart',desc:'Sell 75% of grain instead of 50%',canBuy:s=>s.rubles>=11&&!s.upgrades.cart,buy:s=>{s.rubles-=11;s.upgrades.cart=true;},label:s=>s.upgrades.cart?'Owned':'Buy (11💰)'},
+  // STORAGE
+  {id:'barn',icon:'🏚️',title:'Root Cellar',desc:'Grain spoils after 3 seasons not 1',canBuy:s=>s.rubles>=7&&!s.upgrades.cellar,buy:s=>{s.rubles-=7;s.upgrades.cellar=true;},label:s=>s.upgrades.cellar?'Owned':'Buy (7💰)'},
+  {id:'silo',icon:'🏛️',title:'Stone Silo',desc:'Grain never spoils (overrides cellar)',canBuy:s=>s.rubles>=20&&!s.upgrades.silo,buy:s=>{s.rubles-=20;s.upgrades.silo=true;},label:s=>s.upgrades.silo?'Owned':'Buy (20💰)'},
+  // CONSUMABLES
   {id:'vodka',icon:'🍶',title:'Bottle of Vodka',desc:'Restore 30 health instantly',canBuy:s=>s.rubles>=3,buy:s=>{s.rubles-=3;s.health=Math.min(100,s.health+30);},label:()=>'Buy (3💰)'},
-  {id:'bribe2',icon:'🎁',title:'Gift Basket',desc:'Cut tax owed by 8 rubles',canBuy:s=>s.rubles>=4&&s.taxDue>0,buy:s=>{s.rubles-=4;s.taxDue=Math.max(0,s.taxDue-8);},label:s=>s.taxDue>0?'Buy (4💰)':'(winter only)'},
+  {id:'bread',icon:'🍞',title:'Black Bread',desc:'Restore 15 health, costs only 1 ruble',canBuy:s=>s.rubles>=1,buy:s=>{s.rubles-=1;s.health=Math.min(100,s.health+15);},label:()=>'Buy (1💰)'},
+  {id:'bribe2',icon:'🎁',title:'Gift Basket',desc:'Cut tax owed by 8 rubles (winter only)',canBuy:s=>s.rubles>=4&&s.taxDue>0,buy:s=>{s.rubles-=4;s.taxDue=Math.max(0,s.taxDue-8);},label:s=>s.taxDue>0?'Buy (4💰)':'(winter only)'},
+  {id:'forgery',icon:'📜',title:'Forged Papers',desc:'Skip tax collection this winter entirely',canBuy:s=>s.rubles>=15&&!s.upgrades.forgery&&s.seasonIdx===3,buy:s=>{s.rubles-=15;s.upgrades.forgery=true;s.taxDue=0;},label:s=>s.seasonIdx===3&&!s.upgrades.forgery?'Buy (15💰)':'(winter only)'},
 ];
 
-function freshState(){return{grain:10,rubles:3,health:100,year:1,seasonIdx:0,plots:Array(8).fill('empty'),extraPlots:0,grainAge:0,taxDue:0,taxPaid:0,plowed:false,harvested:false,dead:false,upgrades:{hardySeeds:false,sunflower:false,cellar:false,ox:false}};}
+function freshState(){
+  return{
+    grain:10,rubles:3,health:100,year:1,seasonIdx:0,
+    plots:Array(8).fill('empty'),extraPlots:0,grainAge:0,
+    taxDue:0,taxPaid:0,plowed:false,harvested:false,dead:false,
+    upgrades:{hardySeeds:false,sunflower:false,maize:false,ox:false,scythe:false,cart:false,cellar:false,silo:false,forgery:false}
+  };
+}
 let state=freshState();
 function $(id){return document.getElementById(id);}
 function totalPlots(){return 8+state.extraPlots;}
 
+/* ===================== RENDER ===================== */
 function render(){
   $('s-grain').textContent=state.grain;
   $('s-rubles').textContent=state.rubles;
@@ -206,45 +318,194 @@ function render(){
   if(state.plots.length!==n)state.plots=Array(n).fill('empty');
   const f=$('field');f.innerHTML='';
   state.plots.forEach(p=>{const el=document.createElement('span');el.className='plot';el.textContent=p==='empty'?'🟫':p==='planted'?'🌱':p==='grown'?'🌾':'❄️';f.appendChild(el);});
-  const maxAge=state.upgrades.cellar?3:1;
-  if(state.grain>0&&state.grainAge>=maxAge)$('spoil-label').textContent='⚠️ Grain is old — will spoil next season!';
-  else if(state.grain>0&&state.grainAge>0)$('spoil-label').textContent='🕰️ Grain age: '+state.grainAge+'/'+maxAge+' seasons';
-  else $('spoil-label').textContent='';
+
+  // Spoil label
+  if(state.upgrades.silo){$('spoil-label').textContent='🏛️ Silo — grain never spoils.';}
+  else{
+    const maxAge=state.upgrades.cellar?3:1;
+    if(state.grain>0&&state.grainAge>=maxAge)$('spoil-label').textContent='⚠️ Grain is old — will spoil next season!';
+    else if(state.grain>0&&state.grainAge>0)$('spoil-label').textContent='🕰️ Grain age: '+state.grainAge+'/'+maxAge+' seasons';
+    else $('spoil-label').textContent='';
+  }
+
   $('btn-plow').disabled=state.plowed||state.seasonIdx!==0;
   $('btn-harvest').disabled=state.harvested||state.seasonIdx!==2;
   $('btn-sell').disabled=state.grain<=0;
   $('btn-bribe').disabled=state.rubles<2;
+
   const ur=$('upgrades-row');ur.innerHTML='';
-  if(state.upgrades.hardySeeds)ur.innerHTML+='<span class="badge">🌿 Hardy Seeds</span>';
-  if(state.upgrades.sunflower)ur.innerHTML+='<span class="badge">🌻 Sunflower Crop</span>';
-  if(state.upgrades.cellar)ur.innerHTML+='<span class="badge">🏚️ Root Cellar</span>';
-  if(state.upgrades.ox)ur.innerHTML+='<span class="badge">🐂 Two Oxen</span>';
-  if(state.extraPlots>0)ur.innerHTML+='<span class="badge">🌍 +'+state.extraPlots+' plots</span>';
+  const badges=[
+    [state.upgrades.hardySeeds,'🌿 Hardy Seeds'],
+    [state.upgrades.sunflower,'🌻 Sunflower'],
+    [state.upgrades.maize,'🌽 Maize'],
+    [state.upgrades.ox,'🐂 Two Oxen'],
+    [state.upgrades.scythe,'⚔️ Steel Scythe'],
+    [state.upgrades.cart,'🛕 Grain Cart'],
+    [state.upgrades.cellar,'🏚️ Root Cellar'],
+    [state.upgrades.silo,'🏛️ Stone Silo'],
+    [state.extraPlots>0,'🌍 +'+state.extraPlots+' plots'],
+  ];
+  badges.forEach(([on,label])=>{if(on)ur.innerHTML+='<span class="badge">'+label+'</span>';});
+
   const sg=$('shop-grid');sg.innerHTML='';
-  SHOP_ITEMS.forEach(item=>{const cb=item.canBuy(state);const lbl=item.label(state);const btn=document.createElement('button');btn.className='shop-btn';btn.disabled=!cb;btn.innerHTML='<div style="font-size:20px;margin-bottom:4px">'+item.icon+'</div><div class="btn-title">'+item.title+'</div><div class="btn-desc">'+item.desc+'</div><div class="btn-cost">'+lbl+'</div>';btn.onclick=()=>{item.buy(state);log('Bought: '+item.title+' '+item.icon,'good');checkDeath();render();};sg.appendChild(btn);});
+  SHOP_ITEMS.forEach(item=>{
+    const cb=item.canBuy(state);const lbl=item.label(state);
+    const btn=document.createElement('button');btn.className='shop-btn';btn.disabled=!cb;
+    btn.innerHTML='<div style="font-size:1.3rem;margin-bottom:4px">'+item.icon+'</div><div class="btn-title">'+item.title+'</div><div class="btn-desc">'+item.desc+'</div><div class="btn-cost">'+lbl+'</div>';
+    btn.onclick=()=>{item.buy(state);log('Bought: '+item.title+' '+item.icon,'good');checkDeath();render();};
+    sg.appendChild(btn);
+  });
 }
 
 function log(msg,type=''){const el=$('log');el.textContent=msg;el.className='log '+(type||'');}
-function switchTab(tab){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['farm','shop'][i]===tab));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));$('panel-'+tab).classList.add('active');}
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['farm','shop'][i]===tab));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  $('panel-'+tab).classList.add('active');
+}
 
-function harvest(){if(state.harvested||state.seasonIdx!==2)return;const grown=state.plots.filter(p=>p==='grown').length;const pp=state.upgrades.sunflower?5:3;const gained=grown*pp;state.grain+=gained;state.grainAge=0;state.health-=8;state.harvested=true;state.plots=Array(totalPlots()).fill('empty');log('Harvest! '+grown+' plots × '+pp+' = '+gained+' grain. 🌾',gained>0?'good':'bad');checkDeath();render();}
-function sell(){if(state.grain<=0)return;const amt=Math.floor(state.grain/2);const price=state.grainAge>0?Math.ceil(amt*.5):amt;state.rubles+=price;state.grain-=amt;if(state.grainAge>0)log('Sold '+amt+' aged grain for only '+price+' rubles. 📉');else log('Sold '+amt+' fresh grain for '+price+' rubles. 💰','good');render();}
-function rest(){state.health=Math.min(100,state.health+15);state.grain-=2;if(state.grain<0){state.grain=0;state.health-=10;log('No grain! You starve tonight. 😩','bad');}else log('You rest and eat. Health +15. 🛏️','good');checkDeath();render();}
-function bribe(){if(state.rubles<2)return;state.rubles-=2;state.taxDue=Math.max(0,state.taxDue-4);log('You slip rubles to the official. He looks away. 🤫','good');render();}
+/* ===================== MAIN GAME ACTIONS ===================== */
+function sell(){
+  if(state.grain<=0)return;
+  const pct=state.upgrades.cart?0.75:0.5;
+  const amt=Math.floor(state.grain*pct);
+  const price=state.grainAge>0?Math.ceil(amt*.5):amt;
+  state.rubles+=price;state.grain-=amt;
+  if(state.grainAge>0)log('Sold '+amt+' aged grain for only '+price+' rubles. 📉');
+  else log('Sold '+amt+' fresh grain for '+price+' rubles. 💰','good');
+  render();
+}
+function rest(){
+  state.health=Math.min(100,state.health+15);state.grain-=2;
+  if(state.grain<0){state.grain=0;state.health-=10;log('No grain! You starve tonight. 😩','bad');}
+  else log('You rest and eat. Health +15. 🛏️','good');
+  checkDeath();render();
+}
+function bribe(){
+  if(state.rubles<2)return;
+  state.rubles-=2;state.taxDue=Math.max(0,state.taxDue-4);
+  log('You slip rubles to the official. He looks away. 🤫','good');render();
+}
+/* ---- RANDOM EVENTS ---- */
+// Each event: { minYear, season (0-3 or null=any), chance(year), apply(state), msg, type }
+const EVENTS=[
+  // Early-game (year 1+)
+  {minYear:1,season:1,chance:y=>0.12,
+    apply:s=>{const lost=Math.ceil(s.grain*.3);s.grain=Math.max(0,s.grain-lost);return lost+' grain eaten by rats in the barn. 🐀'},type:'bad'},
+  {minYear:1,season:null,chance:y=>0.10,
+    apply:s=>{const h=10+Math.floor(Math.random()*10);s.health=Math.max(1,s.health-h);return'You fall ill from the cold. -'+h+' health. 🤧'},type:'bad'},
+  {minYear:1,season:0,chance:y=>0.10,
+    apply:s=>{s.health=Math.min(100,s.health+15);return'A kind neighbour shares their bread. +15 health. 🍞'},type:'good'},
+  {minYear:1,season:2,chance:y=>0.08,
+    apply:s=>{const g=Math.floor(3+Math.random()*5);s.grain+=g;return'You find a hidden cache of grain in the field. +'+g+' grain. 🎁'},type:'good'},
+
+  // Mid-game (year 3+)
+  {minYear:3,season:null,chance:y=>0.12+y*.01,
+    apply:s=>{const stolen=Math.min(s.rubles,Math.ceil(s.rubles*.4)+1);s.rubles=Math.max(0,s.rubles-stolen);return'Thieves in the night! They stole '+stolen+' rubles. 🦹'},type:'bad'},
+  {minYear:3,season:3,chance:y=>0.12,
+    apply:s=>{const lost=Math.min(s.grain,Math.floor(s.grain*.35)+2);s.grain=Math.max(0,s.grain-lost);return'Soldiers seize '+lost+' grain as "military provisions". ⚔️'},type:'bad'},
+  {minYear:3,season:1,chance:y=>0.10,
+    apply:s=>{const dmg=Math.floor(10+Math.random()*15);s.health=Math.max(1,s.health-dmg);return'A summer heatwave strikes. You collapse in the field. -'+dmg+' health. ☀️'},type:'bad'},
+  {minYear:3,season:0,chance:y=>0.10,
+    apply:s=>{s.extraPlots=Math.max(0,s.extraPlots-2);s.plots=Array(totalPlots()).fill('empty');return'A land dispute — the boyar reclaims 2 of your plots. 😤'},type:'bad'},
+  {minYear:3,season:null,chance:y=>0.08,
+    apply:s=>{const bonus=Math.floor(2+Math.random()*4);s.rubles+=bonus;return'A passing merchant overpays for directions. +'+bonus+' rubles. 💰'},type:'good'},
+
+  // Late-game (year 6+) — brutal
+  {minYear:6,season:null,chance:y=>0.14+y*.015,
+    apply:s=>{const all=s.rubles;s.rubles=0;return'Bandits ambush you on the road and take ALL '+all+' rubles! 🗡️'},type:'bad'},
+  {minYear:6,season:2,chance:y=>0.13,
+    apply:s=>{const lost=Math.ceil(s.grain*.5);s.grain=Math.max(0,s.grain-lost);return'A fire tears through the barn. Half your grain is ash. 🔥'},type:'bad'},
+  {minYear:6,season:3,chance:y=>0.12,
+    apply:s=>{const extra=Math.floor(s.year*1.5);s.taxDue+=extra;return'The tax collector demands a special "Tsar\'s levy" of +'+extra+' extra rubles! 📋'},type:'bad'},
+  {minYear:6,season:1,chance:y=>0.11,
+    apply:s=>{s.plots=s.plots.map(p=>p==='grown'?'planted':p);return'A flood washes away this summer\'s crop growth. Back to seedlings. 🌊'},type:'bad'},
+  {minYear:6,season:null,chance:y=>0.10,
+    apply:s=>{const dmg=15+Math.floor(Math.random()*20);s.health=Math.max(1,s.health-dmg);return'The overseer has you flogged for looking at him wrong. -'+dmg+' health. 😰'},type:'bad'},
+  {minYear:6,season:0,chance:y=>0.08,
+    apply:s=>{const g=Math.floor(6+Math.random()*8);s.grain+=g;return'Your neighbour dies and leaves you their grain stores. +'+g+' grain. 😔'},type:'good'},
+
+  // Year 8+ — desperate straits
+  {minYear:8,season:null,chance:y=>0.15,
+    apply:s=>{const lost=Math.ceil(s.grain*.6);s.grain=Math.max(0,s.grain-lost);return'An inspector condemns your grain as "unfit" and confiscates 60% of it. 🪖'},type:'bad'},
+  {minYear:8,season:3,chance:y=>0.13,
+    apply:s=>{const h=20+Math.floor(Math.random()*15);s.health=Math.max(1,s.health-h);return'Plague sweeps the village. You survive — barely. -'+h+' health. ☠️'},type:'bad'},
+  {minYear:8,season:null,chance:y=>0.12,
+    apply:s=>{const all=s.rubles;s.rubles=0;const g=Math.ceil(s.grain*.4);s.grain=Math.max(0,s.grain-g);return'Cossack raiders pillage the village — lose all '+all+' rubles and '+g+' grain. 🐴'},type:'bad'},
+];
+
+function rollEvents(seasonIdx){
+  // At most one event per season transition; weight toward bad luck in late game
+  const eligible=EVENTS.filter(e=>
+    state.year>=e.minYear &&
+    (e.season===null||e.season===seasonIdx)
+  );
+  // Shuffle
+  for(let i=eligible.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[eligible[i],eligible[j]]=[eligible[j],eligible[i]];}
+  for(const ev of eligible){
+    if(Math.random()<ev.chance(state.year)){
+      const msg=ev.apply(state);
+      // Small delay so main season log shows first, then event pops
+      setTimeout(()=>{log(msg,ev.type);render();checkDeath();},350);
+      return; // one event per transition
+    }
+  }
+}
 
 function endSeason(){
   state.seasonIdx=(state.seasonIdx+1)%4;
-  if(state.seasonIdx===1){state.plots=state.plots.map(p=>p==='planted'?'grown':p);log('Summer. Your crops grow tall. ☀️','good');}
-  if(state.seasonIdx===2){const bc=state.upgrades.hardySeeds?.15:.30;if(Math.random()<bc){state.plots=Array(totalPlots()).fill('empty');log('Blight! Entire crop destroyed. 🪲','bad');}else log('Autumn. Crops survived — harvest now! 🍂');}
-  if(state.seasonIdx===3){const tax=5+state.year*2;state.taxDue=tax;state.taxPaid=0;if(state.rubles>=tax){state.rubles-=tax;state.taxPaid=tax;log('Tax collector takes '+tax+' rubles. Paid in full. ❄️');}else{const sh=tax-state.rubles;state.rubles=0;state.taxPaid=tax-sh;state.health-=sh*5;log('Can\'t pay! Beaten for '+sh+' missing rubles. 😰','bad');}if(state.grain<4){state.health-=20;log('Barely any grain in winter. You go hungry. ❄️','bad');}const maxAge=state.upgrades.cellar?3:1;state.grainAge++;if(state.grainAge>maxAge&&state.grain>0){const sp=Math.ceil(state.grain*.6);state.grain=Math.max(0,state.grain-sp);log(sp+' grain rotted! Build a root cellar. 🤢','bad');}}
-  if(state.seasonIdx===0){state.year++;state.plowed=false;state.harvested=false;state.health=Math.max(10,state.health-5);if(state.plots.length!==totalPlots())state.plots=Array(totalPlots()).fill('empty');if(state.year>10){showGameModal('🎉 Freedom!','You survived 10 years with '+state.grain+' grain and '+state.rubles+' rubles!');return;}log('Year '+state.year+' begins. 🌱');}
+  if(state.seasonIdx===1){
+    state.plots=state.plots.map(p=>p==='planted'?'grown':p);
+    log('Summer. Your crops grow tall. ☀️','good');
+  }
+  if(state.seasonIdx===2){
+    const bc=state.upgrades.hardySeeds?.15:.30;
+    if(Math.random()<bc){state.plots=Array(totalPlots()).fill('empty');log('Blight! Entire crop destroyed. 🪲','bad');}
+    else log('Autumn arrives. Harvest your crops! 🍂');
+  }
+  if(state.seasonIdx===3){
+    if(state.upgrades.forgery){
+      state.upgrades.forgery=false;
+      log('Your forged papers fool the tax collector. He moves on. 📜','good');
+    } else {
+      const tax=5+state.year*2;state.taxDue=tax;state.taxPaid=0;
+      if(state.rubles>=tax){state.rubles-=tax;state.taxPaid=tax;log('Tax collector takes '+tax+' rubles. Paid in full. ❄️');}
+      else{const sh=tax-state.rubles;state.rubles=0;state.taxPaid=tax-sh;state.health-=sh*5;log("Can't pay! Beaten for "+sh+' missing rubles. 😰','bad');}
+    }
+    if(state.grain<4){state.health-=20;log('Barely any grain in winter. You go hungry. ❄️','bad');}
+    if(!state.upgrades.silo){
+      const maxAge=state.upgrades.cellar?3:1;
+      state.grainAge++;
+      if(state.grainAge>maxAge&&state.grain>0){
+        const sp=Math.ceil(state.grain*.6);state.grain=Math.max(0,state.grain-sp);
+        log(sp+' grain rotted! Build a root cellar. 🤢','bad');
+      }
+    }
+  }
+  if(state.seasonIdx===0){
+    state.year++;state.plowed=false;state.harvested=false;
+    state.health=Math.max(10,state.health-5);
+    if(state.plots.length!==totalPlots())state.plots=Array(totalPlots()).fill('empty');
+    if(state.year>10){showGameModal('🎉 Freedom!','You survived 10 years with '+state.grain+' grain and '+state.rubles+' rubles!');return;}
+    log('Year '+state.year+' begins. 🌱');
+  }
+  rollEvents(state.seasonIdx);
   checkDeath();render();
 }
+function checkDeath(){
+  if(state.health<=0&&!state.dead){
+    state.dead=true;
+    showGameModal('💀 You Died','You survived '+state.year+' year'+(state.year>1?'s':'')+' as a serf.');
+  }
+}
+function showGameModal(title,body){
+  const w=$('field-wrapper');const ex=w.querySelector('.g-overlay');if(ex)ex.remove();
+  const ov=document.createElement('div');ov.className='g-overlay';
+  ov.innerHTML='<div class="g-modal"><h3>'+title+'</h3><p>'+body+'</p><button onclick="this.closest(\'.g-overlay\').remove();state=freshState();render();">Play Again</button></div>';
+  w.appendChild(ov);
+}
 
-function checkDeath(){if(state.health<=0&&!state.dead){state.dead=true;showGameModal('💀 You Died','You survived '+state.year+' year'+(state.year>1?'s':'')+' as a serf.');}}
-function showGameModal(title,body){const w=$('field-wrapper');const ex=w.querySelector('.g-overlay');if(ex)ex.remove();const ov=document.createElement('div');ov.className='g-overlay';ov.innerHTML='<div class="g-modal"><h3>'+title+'</h3><p>'+body+'</p><button onclick="this.closest(\'.g-overlay\').remove();state=freshState();render();">Play Again</button></div>';w.appendChild(ov);}
-
-/* ---- PLANTING MINIGAME ---- */
+/* ===================== PLANTING MINIGAME ===================== */
 const SOIL_TYPES=['🟤','🟫','⬛'];
 const SOIL_WANTS={'🟤':'🌾','🟫':'🌻','⬛':'🥕'};
 let mini={active:false,done:false,cells:[],correct:0,wrong:0,timer:null,timeLeft:0};
@@ -252,42 +513,37 @@ let mini={active:false,done:false,cells:[],correct:0,wrong:0,timer:null,timeLeft
 function openPlantModal(){
   if(state.plowed||state.seasonIdx!==0)return;
   mini={active:false,done:false,cells:[],correct:0,wrong:0,timer:null,timeLeft:0};
-  $('pm-correct').textContent='0';
-  $('pm-wrong').textContent='0';
-  $('pm-planted').textContent='0';
-  $('pm-prog').style.width='0%';
-  $('pm-timer').textContent='';
-  $('pm-timer').className='pm-timer';
+  $('pm-correct').textContent='0';$('pm-wrong').textContent='0';$('pm-planted').textContent='0';
+  $('pm-prog').style.width='0%';$('pm-timer').textContent='';$('pm-timer').className='mtimer';
   $('pm-result').style.display='none';
-  $('pm-start-btn').style.display='';
-  $('pm-done-btn').style.display='none';
-  $('pm-grid-wrap').innerHTML='<div style="font-size:13px;color:var(--color-text-secondary);padding:20px 0;">Press ▶ Start plowing to begin!</div>';
+  $('pm-start-btn').style.display='';$('pm-done-btn').style.display='none';
+  $('pm-grid-wrap').innerHTML='<div style="font-size:.9rem;color:#8a6840;padding:20px 0;font-style:italic;">Press ▶ Start plowing to begin!</div>';
   $('plant-modal-bg').classList.add('open');
 }
+function closePlantModal(){clearInterval(mini.timer);$('plant-modal-bg').classList.remove('open');}
 
-function closePlantModal(){
-  clearInterval(mini.timer);
-  $('plant-modal-bg').classList.remove('open');
+function startPlanting(){
+  const total=totalPlots();mini.cells=[];
+  for(let i=0;i<total;i++)mini.cells.push({soil:SOIL_TYPES[Math.floor(Math.random()*3)],done:false,ok:false});
+  mini.active=true;mini.done=false;mini.correct=0;mini.wrong=0;
+  mini.timeLeft=Math.max(15,Math.round(total*1.8));
+  $('pm-result').style.display='none';$('pm-start-btn').style.display='none';
+  $('pm-timer').textContent='⏱ '+mini.timeLeft+'s';
+  renderPlantGrid();clearInterval(mini.timer);
+  mini.timer=setInterval(()=>{
+    mini.timeLeft--;
+    $('pm-timer').className='mtimer'+(mini.timeLeft<=5?' urgent':'');
+    $('pm-timer').textContent='⏱ '+mini.timeLeft+'s';
+    if(mini.timeLeft<=0){clearInterval(mini.timer);finishPlanting();}
+  },1000);
 }
-
-function buildMiniCells(){
-  const total=totalPlots();
-  mini.cells=[];
-  for(let i=0;i<total;i++){
-    mini.cells.push({soil:SOIL_TYPES[Math.floor(Math.random()*3)],done:false,ok:false});
-  }
-}
-
-function renderMiniGrid(){
+function renderPlantGrid(){
   const cols=Math.min(totalPlots(),8);
-  const wrap=$('pm-grid-wrap');
-  wrap.innerHTML='';
-  const g=document.createElement('div');
-  g.className='pm-grid-wrap';
-  g.style.gridTemplateColumns='repeat('+cols+', 42px)';
+  const wrap=$('pm-grid-wrap');wrap.innerHTML='';
+  const g=document.createElement('div');g.className='mgrid';
+  g.style.gridTemplateColumns='repeat('+cols+', 44px)';
   mini.cells.forEach((cell,i)=>{
-    const el=document.createElement('div');
-    el.className='pm-cell'+(cell.done?' done':'');
+    const el=document.createElement('div');el.className='mcell'+(cell.done?' done':'');
     el.textContent=cell.done?(cell.ok?'✅':'❌'):cell.soil;
     el.title=cell.done?'':(cell.soil==='🟤'?'Sandy — needs Wheat':cell.soil==='🟫'?'Rich — needs Sunflower':'Dark — needs Carrot');
     if(!cell.done&&mini.active){el.onclick=()=>plantCell(i);}
@@ -296,71 +552,188 @@ function renderMiniGrid(){
   wrap.appendChild(g);
   const done=mini.cells.filter(c=>c.done).length;
   $('pm-prog').style.width=Math.round(done/mini.cells.length*100)+'%';
-  $('pm-correct').textContent=mini.correct;
-  $('pm-wrong').textContent=mini.wrong;
-  $('pm-planted').textContent=mini.correct;
+  $('pm-correct').textContent=mini.correct;$('pm-wrong').textContent=mini.wrong;$('pm-planted').textContent=mini.correct;
 }
-
-function startPlanting(){
-  buildMiniCells();
-  mini.active=true;mini.done=false;mini.correct=0;mini.wrong=0;
-  mini.timeLeft=Math.max(15,totalPlots()*1.8|0);
-  $('pm-result').style.display='none';
-  $('pm-start-btn').style.display='none';
-  $('pm-timer').textContent='⏱ '+mini.timeLeft+'s';
-  renderMiniGrid();
-  clearInterval(mini.timer);
-  mini.timer=setInterval(()=>{
-    mini.timeLeft--;
-    const urgent=mini.timeLeft<=5;
-    $('pm-timer').className='pm-timer'+(urgent?' urgent':'');
-    $('pm-timer').textContent='⏱ '+mini.timeLeft+'s';
-    if(mini.timeLeft<=0){clearInterval(mini.timer);finishPlanting();}
-  },1000);
-}
-
 function plantCell(i){
   if(!mini.active||mini.cells[i].done)return;
-  const chosen=$('pm-seed').value;
-  const cell=mini.cells[i];
-  cell.done=true;
-  cell.ok=(chosen===SOIL_WANTS[cell.soil]);
+  const chosen=$('pm-seed').value;const cell=mini.cells[i];
+  cell.done=true;cell.ok=(chosen===SOIL_WANTS[cell.soil]);
   if(cell.ok)mini.correct++;else mini.wrong++;
-  const allDone=mini.cells.every(c=>c.done);
-  if(allDone){clearInterval(mini.timer);finishPlanting();}
-  else renderMiniGrid();
+  if(mini.cells.every(c=>c.done)){clearInterval(mini.timer);finishPlanting();}
+  else renderPlantGrid();
 }
-
 function finishPlanting(){
   mini.active=false;mini.done=true;
   mini.cells.forEach(c=>{if(!c.done)c.done=true;});
-  renderMiniGrid();
-  $('pm-timer').textContent='';
-
-  const healthCost=state.upgrades.ox?5:10;
-  state.health-=healthCost;
-
-  const plotsToPlant=mini.correct;
-  const total=totalPlots();
-  state.plots=Array(total).fill('empty');
-  for(let i=0;i<Math.min(plotsToPlant,total);i++)state.plots[i]='planted';
+  renderPlantGrid();$('pm-timer').textContent='';
+  const healthCost=state.upgrades.ox?5:10;state.health-=healthCost;
+  const n=totalPlots();state.plots=Array(n).fill('empty');
+  for(let i=0;i<Math.min(mini.correct,n);i++)state.plots[i]='planted';
   state.plowed=true;
-
   const res=$('pm-result');
-  if(mini.correct===0){
-    res.className='pm-result bad';
-    res.textContent='No patches planted correctly. Remember: sandy🟤→wheat, rich🟫→sunflower, dark⬛→carrot. No plots were planted this year!';
-  } else if(mini.correct===total){
-    res.className='pm-result';
-    res.textContent='Perfect plowing! All '+total+' plots planted. 🌱 A great harvest awaits!';
-  } else {
-    res.className='pm-result';
-    res.textContent='You planted '+mini.correct+' of '+total+' plots correctly. '+mini.wrong+' patches wasted. Mismatched seeds won\'t grow.';
-  }
-  res.style.display='block';
-  $('pm-done-btn').style.display='';
-  log('Plowed the fields. '+mini.correct+'/'+total+' plots planted correctly. 🐂',mini.correct>0?'good':'bad');
+  if(mini.correct===0){res.className='mresult bad';res.textContent='No patches planted correctly. Remember: sandy🟤→wheat, rich🟫→sunflower, dark⬛→carrot.';}
+  else if(mini.correct===n){res.className='mresult';res.textContent='Perfect plowing! All '+n+' plots planted. 🌱 A great harvest awaits!';}
+  else{res.className='mresult';res.textContent='You planted '+mini.correct+' of '+n+' plots correctly. '+mini.wrong+' patches were wasted.';}
+  res.style.display='block';$('pm-done-btn').style.display='';
+  log('Plowed the fields. '+mini.correct+'/'+n+' plots planted. 🐂',mini.correct>0?'good':'bad');
   render();
 }
+
+/* ===================== HARVEST MINIGAME ===================== */
+let hv={
+  phase:'idle', // idle | needle | collecting | done
+  needlePos:0, needleDir:1, needleSpeed:0, needleRaf:null, needleStopped:false,
+  zoneLeft:0, zoneWidth:0,
+  bonus:1.0,
+  crops:[], collected:0, totalGrain:0,
+  grownCount:0, perPlot:3
+};
+
+function openHarvestModal(){
+  if(state.harvested||state.seasonIdx!==2)return;
+  const grown=state.plots.filter(p=>p==='grown').length;
+  if(grown===0){
+    log('No crops grew — nothing to harvest. 🪲','bad');
+    state.harvested=true;render();return;
+  }
+  hv.grownCount=grown;
+  hv.perPlot=state.upgrades.sunflower?5:3;
+  if(state.upgrades.maize)hv.perPlot*=2;
+  hv.phase='idle';hv.needleStopped=false;hv.bonus=1.0;hv.crops=[];hv.collected=0;hv.totalGrain=0;
+  $('hv-sub').textContent='Stop the needle in the golden zone, then click each crop to collect it!';
+  $('hv-info').textContent='Click the bar above to stop the needle — try to land in the green zone!';
+  $('hv-crops').innerHTML='';
+  $('hv-collected').textContent='0';
+  $('hv-bonus').textContent='×1.0';
+  $('hv-total').textContent='0';
+  $('hv-prog').style.width='0%';
+  $('hv-result').style.display='none';
+  $('hv-start-btn').style.display='';$('hv-done-btn').style.display='none';
+  // Build zone (wider with steel scythe)
+  const zoneW=state.upgrades.scythe?34:22; // percent of lane width
+  hv.zoneLeft=Math.random()*(60-zoneW)+20; // 20..80-zoneW
+  hv.zoneWidth=zoneW;
+  const lane=$('hv-lane');
+  $('hv-zone').style.left=hv.zoneLeft+'%';
+  $('hv-zone').style.width=hv.zoneWidth+'%';
+  $('hv-needle').style.left='2%';
+  cancelAnimationFrame(hv.needleRaf);
+  $('harvest-modal-bg').classList.add('open');
+}
+function closeHarvestModal(){
+  cancelAnimationFrame(hv.needleRaf);
+  $('harvest-modal-bg').classList.remove('open');
+}
+
+function startHarvest(){
+  $('hv-start-btn').style.display='none';
+  hv.phase='needle';
+  hv.needlePos=2;hv.needleDir=1;
+  hv.needleSpeed=state.upgrades.scythe?0.35:0.55;
+  $('hv-lane').style.cursor='pointer';
+  $('hv-lane').onclick=needleStop;
+  animateNeedle();
+}
+
+function animateNeedle(){
+  if(hv.phase!=='needle')return;
+  hv.needlePos+=hv.needleDir*hv.needleSpeed;
+  if(hv.needlePos>=98){hv.needlePos=98;hv.needleDir=-1;}
+  if(hv.needlePos<=2){hv.needlePos=2;hv.needleDir=1;}
+  $('hv-needle').style.left=hv.needlePos+'%';
+  hv.needleRaf=requestAnimationFrame(animateNeedle);
+}
+
+function needleStop(){
+  if(hv.phase!=='needle')return;
+  cancelAnimationFrame(hv.needleRaf);
+  hv.phase='collecting';
+  $('hv-lane').style.cursor='default';
+  $('hv-lane').onclick=null;
+
+  // Score the stop
+  const pos=hv.needlePos;
+  const inZone=pos>=hv.zoneLeft&&pos<=(hv.zoneLeft+hv.zoneWidth);
+  // How centered? 0=edge, 1=center
+  const center=hv.zoneLeft+hv.zoneWidth/2;
+  const halfW=hv.zoneWidth/2;
+  const proximity=inZone?Math.max(0,1-Math.abs(pos-center)/halfW):0;
+
+  if(inZone){
+    hv.bonus=1+Math.round(proximity*10)/10; // 1.0–2.0
+    $('hv-needle').style.background='var(--green-light)';
+    $('hv-needle').style.boxShadow='0 0 10px rgba(122,184,64,.8)';
+    $('hv-info').textContent='🎯 Perfect stop! Bonus ×'+hv.bonus.toFixed(1)+' — now click each crop to collect!';
+  } else {
+    const miss=Math.min(Math.abs(pos-hv.zoneLeft),Math.abs(pos-(hv.zoneLeft+hv.zoneWidth)));
+    hv.bonus=Math.max(0.5,1-(miss/50)); // penalty for missing
+    hv.bonus=Math.round(hv.bonus*10)/10;
+    $('hv-needle').style.background='var(--red-light)';
+    $('hv-needle').style.boxShadow='0 0 10px rgba(231,76,60,.8)';
+    $('hv-info').textContent='😬 Missed the zone (×'+hv.bonus.toFixed(1)+' penalty). Still — click each crop to collect!';
+  }
+  $('hv-bonus').textContent='×'+hv.bonus.toFixed(1);
+
+  // Build crop stalks to click
+  buildCropList();
+}
+
+function buildCropList(){
+  const icon=state.upgrades.sunflower?'🌻':state.upgrades.maize?'🌽':'🌾';
+  hv.crops=[];
+  const el=$('hv-crops');el.innerHTML='';
+  for(let i=0;i<hv.grownCount;i++){
+    hv.crops.push({harvested:false});
+    const c=document.createElement('span');
+    c.className='harvest-crop';
+    c.textContent=icon;
+    c.dataset.idx=i;
+    c.onclick=()=>clickCrop(i,c);
+    el.appendChild(c);
+  }
+}
+
+function clickCrop(i,el){
+  if(hv.crops[i].harvested)return;
+  hv.crops[i].harvested=true;
+  el.classList.add('harvested');
+  el.textContent='✂️';
+  hv.collected++;
+  const grainFromThisCrop=Math.round(hv.perPlot*hv.bonus);
+  hv.totalGrain+=grainFromThisCrop;
+  $('hv-collected').textContent=hv.collected;
+  $('hv-total').textContent=hv.totalGrain;
+  $('hv-prog').style.width=Math.round(hv.collected/hv.grownCount*100)+'%';
+  if(hv.collected===hv.grownCount)finishHarvest();
+}
+
+function finishHarvest(){
+  hv.phase='done';
+  const healthCost=state.upgrades.maize?16:8;
+  state.health-=healthCost;
+  state.grain+=hv.totalGrain;
+  state.grainAge=0;
+  state.harvested=true;
+  state.plots=Array(totalPlots()).fill('empty');
+
+  const res=$('hv-result');
+  res.style.display='block';
+  if(hv.bonus>=1.5){
+    res.className='mresult';
+    res.textContent='Outstanding harvest! ×'+hv.bonus.toFixed(1)+' bonus — '+hv.totalGrain+' grain gathered. The boyar is almost impressed.';
+  } else if(hv.bonus>=1.0){
+    res.className='mresult';
+    res.textContent='Solid harvest! '+hv.totalGrain+' grain gathered. Back aches but the barn is full. 🌾';
+  } else {
+    res.className='mresult bad';
+    res.textContent='Clumsy harvest. Only '+hv.totalGrain+' grain gathered after the ×'+hv.bonus.toFixed(1)+' penalty. Work on your timing!';
+  }
+  $('hv-done-btn').style.display='';
+  log('Harvest complete! '+hv.totalGrain+' grain. Bonus: ×'+hv.bonus.toFixed(1)+'. 🌾',hv.bonus>=1.0?'good':'bad');
+  render();
+}
+
 render();
 </script>
+</body>
+</html>
