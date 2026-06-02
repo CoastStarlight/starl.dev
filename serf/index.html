@@ -128,13 +128,95 @@ button:disabled{opacity:.3;cursor:default;}
 ::-webkit-scrollbar{width:6px;}
 ::-webkit-scrollbar-track{background:var(--bg2);}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ---- DIFFICULTY SCREEN ---- */
+#diff-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;}
+.diff-title{font-family:'Uncial Antiqua',serif;font-size:2.4rem;color:var(--gold);text-shadow:0 0 40px rgba(212,168,67,.45),0 2px 4px rgba(0,0,0,.8);margin-bottom:.4rem;}
+.diff-sub{font-style:italic;color:var(--text3);font-size:1rem;margin-bottom:2.5rem;}
+.diff-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;max-width:560px;margin-bottom:2rem;}
+.diff-card{background:var(--card);border:2px solid var(--border);border-radius:12px;padding:1.25rem 1rem;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;}
+.diff-card:hover{transform:translateY(-3px);}
+.diff-card.selected{transform:translateY(-3px);}
+.diff-card[data-d="peasant"]{border-color:#5a8a2a;}
+.diff-card[data-d="peasant"].selected,.diff-card[data-d="peasant"]:hover{border-color:var(--green-light);box-shadow:0 8px 30px rgba(90,138,42,.35);}
+.diff-card[data-d="serf"]{border-color:var(--gold-dim);}
+.diff-card[data-d="serf"].selected,.diff-card[data-d="serf"]:hover{border-color:var(--gold);box-shadow:0 8px 30px rgba(212,168,67,.3);}
+.diff-card[data-d="slave"]{border-color:#7a2020;}
+.diff-card[data-d="slave"].selected,.diff-card[data-d="slave"]:hover{border-color:var(--red-light);box-shadow:0 8px 30px rgba(192,57,43,.4);}
+.dc-icon{font-size:2rem;margin-bottom:.5rem;}
+.dc-name{font-family:'Uncial Antiqua',serif;font-size:1.1rem;margin-bottom:.3rem;}
+.diff-card[data-d="peasant"] .dc-name{color:#7ab840;}
+.diff-card[data-d="serf"] .dc-name{color:var(--gold);}
+.diff-card[data-d="slave"] .dc-name{color:var(--red-light);}
+.dc-tagline{font-size:.78rem;color:var(--text3);font-style:italic;margin-bottom:.8rem;}
+.dc-perks{font-size:.75rem;color:var(--text2);line-height:1.7;text-align:left;}
+.dc-perks span{display:block;}
+.diff-start-btn{font-family:'Uncial Antiqua',serif;font-size:1.1rem;padding:12px 40px;border-radius:10px;background:linear-gradient(160deg,var(--bg4),var(--bg3));border:2px solid var(--gold-dim);color:var(--gold);cursor:pointer;transition:all .18s;width:auto;letter-spacing:.04em;}
+.diff-start-btn:hover:not(:disabled){background:linear-gradient(160deg,#4a3420,var(--bg4));border-color:var(--gold);color:var(--gold-light);transform:translateY(-2px);box-shadow:0 6px 24px rgba(212,168,67,.25);}
+.diff-start-btn:disabled{opacity:.3;cursor:default;transform:none;}
+.diff-badge{position:absolute;top:8px;right:8px;font-size:.65rem;background:var(--gold-dim);color:var(--bg);padding:2px 7px;border-radius:99px;font-weight:600;letter-spacing:.04em;}
+#diff-screen .diff-footer{font-size:.78rem;color:var(--text3);font-style:italic;margin-top:1rem;}
 </style>
 </head>
 <body>
-<div id="wrap">
+
+<!-- DIFFICULTY SCREEN -->
+<div id="diff-screen">
+  <div class="diff-title">🌾 Serf Life</div>
+  <p class="diff-sub">Russia, 1820. Choose your burden before you begin.</p>
+  <div class="diff-cards">
+    <div class="diff-card" data-d="peasant" onclick="selectDiff('peasant')">
+      <div class="diff-badge">EASY</div>
+      <div class="dc-icon">🧑‍🌾</div>
+      <div class="dc-name">Peasant</div>
+      <div class="dc-tagline">"At least you own a goat."</div>
+      <div class="dc-perks">
+        <span>✦ Start with 18 grain &amp; 8 rubles</span>
+        <span>✦ Harvest zone 50% wider</span>
+        <span>✦ Planting timer +8 seconds</span>
+        <span>✦ Events 40% less frequent</span>
+        <span>✦ Tax grows slower (+1/yr)</span>
+        <span>✦ Blight chance 20%</span>
+      </div>
+    </div>
+    <div class="diff-card selected" data-d="serf" onclick="selectDiff('serf')">
+      <div class="diff-badge">NORMAL</div>
+      <div class="dc-icon">⛏️</div>
+      <div class="dc-name">Serf</div>
+      <div class="dc-tagline">"You are property. Work."</div>
+      <div class="dc-perks">
+        <span>✦ Start with 10 grain &amp; 3 rubles</span>
+        <span>✦ Standard harvest zone</span>
+        <span>✦ Standard planting timer</span>
+        <span>✦ Standard event frequency</span>
+        <span>✦ Tax +2 rubles per year</span>
+        <span>✦ Blight chance 30%</span>
+      </div>
+    </div>
+    <div class="diff-card" data-d="slave" onclick="selectDiff('slave')">
+      <div class="diff-badge">BRUTAL</div>
+      <div class="dc-icon">⛓️</div>
+      <div class="dc-name">Bonded Slave</div>
+      <div class="dc-tagline">"God has forgotten you."</div>
+      <div class="dc-perks">
+        <span>✦ Start with 5 grain &amp; 1 ruble</span>
+        <span>✦ Harvest zone 35% narrower</span>
+        <span>✦ Planting timer −5 seconds</span>
+        <span>✦ Events 50% more frequent</span>
+        <span>✦ Tax +3 rubles per year</span>
+        <span>✦ Blight chance 45%</span>
+      </div>
+    </div>
+  </div>
+  <button class="diff-start-btn" onclick="startGame()">Begin Suffering</button>
+  <p class="diff-footer">Survive 10 years to earn your freedom.</p>
+</div>
+
+<div id="wrap" style="display:none;">
   <div class="game-header">
     <h1>🌾 Serf Life</h1>
     <p class="sub">Russia, 1820 — survive the seasons, serve the Tsar</p>
+    <p class="sub" id="diff-label" style="margin-top:2px;font-size:.82rem;"></p>
   </div>
 
   <div class="stats">
@@ -293,9 +375,64 @@ const SHOP_ITEMS=[
   {id:'forgery',icon:'📜',title:'Forged Papers',desc:'Skip tax collection this winter entirely',canBuy:s=>s.rubles>=15&&!s.upgrades.forgery&&s.seasonIdx===3,buy:s=>{s.rubles-=15;s.upgrades.forgery=true;s.taxDue=0;},label:s=>s.seasonIdx===3&&!s.upgrades.forgery?'Buy (15💰)':'(winter only)'},
 ];
 
+/* ---- DIFFICULTY CONFIG ---- */
+const DIFF_CONFIG={
+  peasant:{
+    grain:18,rubles:8,
+    harvestZoneBonus:0.5,   // multiplier added to zone width factor
+    plantTimerBonus:8,      // extra seconds
+    eventChanceMult:0.6,
+    taxStep:1,
+    blightChance:0.20,
+    needleSpeed:0.38,
+    label:'Peasant 🧑‍🌾'
+  },
+  serf:{
+    grain:10,rubles:3,
+    harvestZoneBonus:0,
+    plantTimerBonus:0,
+    eventChanceMult:1.0,
+    taxStep:2,
+    blightChance:0.30,
+    needleSpeed:0.55,
+    label:'Serf ⛏️'
+  },
+  slave:{
+    grain:5,rubles:1,
+    harvestZoneBonus:-0.35,
+    plantTimerBonus:-5,
+    eventChanceMult:1.5,
+    taxStep:3,
+    blightChance:0.45,
+    needleSpeed:0.72,
+    label:'Bonded Slave ⛓️'
+  }
+};
+let difficulty='serf';
+let diff=DIFF_CONFIG.serf;
+
+function selectDiff(d){
+  difficulty=d;diff=DIFF_CONFIG[d];
+  document.querySelectorAll('.diff-card').forEach(el=>el.classList.toggle('selected',el.dataset.d===d));
+}
+
+function showDiffScreen(){
+  $('diff-screen').style.display='flex';
+  $('wrap').style.display='none';
+  selectDiff('serf');
+}
+
+function startGame(){
+  diff=DIFF_CONFIG[difficulty];
+  state=freshState();
+  $('diff-screen').style.display='none';
+  $('wrap').style.display='block';
+  render();
+}
+
 function freshState(){
   return{
-    grain:10,rubles:3,health:100,year:1,seasonIdx:0,
+    grain:diff.grain,rubles:diff.rubles,health:100,year:1,seasonIdx:0,
     plots:Array(8).fill('empty'),extraPlots:0,grainAge:0,
     taxDue:0,taxPaid:0,plowed:false,harvested:false,dead:false,
     upgrades:{hardySeeds:false,sunflower:false,maize:false,ox:false,scythe:false,cart:false,cellar:false,silo:false,forgery:false}
@@ -443,7 +580,7 @@ function rollEvents(seasonIdx){
   // Shuffle
   for(let i=eligible.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[eligible[i],eligible[j]]=[eligible[j],eligible[i]];}
   for(const ev of eligible){
-    if(Math.random()<ev.chance(state.year)){
+    if(Math.random()<ev.chance(state.year)*diff.eventChanceMult){
       const msg=ev.apply(state);
       // Small delay so main season log shows first, then event pops
       setTimeout(()=>{log(msg,ev.type);render();checkDeath();},350);
@@ -459,7 +596,7 @@ function endSeason(){
     log('Summer. Your crops grow tall. ☀️','good');
   }
   if(state.seasonIdx===2){
-    const bc=state.upgrades.hardySeeds?.15:.30;
+    const bc=state.upgrades.hardySeeds?diff.blightChance*.5:diff.blightChance;
     if(Math.random()<bc){state.plots=Array(totalPlots()).fill('empty');log('Blight! Entire crop destroyed. 🪲','bad');}
     else log('Autumn arrives. Harvest your crops! 🍂');
   }
@@ -468,7 +605,7 @@ function endSeason(){
       state.upgrades.forgery=false;
       log('Your forged papers fool the tax collector. He moves on. 📜','good');
     } else {
-      const tax=5+state.year*2;state.taxDue=tax;state.taxPaid=0;
+      const tax=5+state.year*diff.taxStep;state.taxDue=tax;state.taxPaid=0;
       if(state.rubles>=tax){state.rubles-=tax;state.taxPaid=tax;log('Tax collector takes '+tax+' rubles. Paid in full. ❄️');}
       else{const sh=tax-state.rubles;state.rubles=0;state.taxPaid=tax-sh;state.health-=sh*5;log("Can't pay! Beaten for "+sh+' missing rubles. 😰','bad');}
     }
@@ -501,7 +638,7 @@ function checkDeath(){
 function showGameModal(title,body){
   const w=$('field-wrapper');const ex=w.querySelector('.g-overlay');if(ex)ex.remove();
   const ov=document.createElement('div');ov.className='g-overlay';
-  ov.innerHTML='<div class="g-modal"><h3>'+title+'</h3><p>'+body+'</p><button onclick="this.closest(\'.g-overlay\').remove();state=freshState();render();">Play Again</button></div>';
+  ov.innerHTML='<div class="g-modal"><h3>'+title+'</h3><p>'+body+'</p><button onclick="this.closest(\'.g-overlay\').remove();showDiffScreen();">Play Again</button></div>';
   w.appendChild(ov);
 }
 
@@ -526,7 +663,7 @@ function startPlanting(){
   const total=totalPlots();mini.cells=[];
   for(let i=0;i<total;i++)mini.cells.push({soil:SOIL_TYPES[Math.floor(Math.random()*3)],done:false,ok:false});
   mini.active=true;mini.done=false;mini.correct=0;mini.wrong=0;
-  mini.timeLeft=Math.max(15,Math.round(total*1.8));
+  mini.timeLeft=Math.max(8,Math.round(total*1.8)+diff.plantTimerBonus);
   $('pm-result').style.display='none';$('pm-start-btn').style.display='none';
   $('pm-timer').textContent='⏱ '+mini.timeLeft+'s';
   renderPlantGrid();clearInterval(mini.timer);
@@ -610,7 +747,8 @@ function openHarvestModal(){
   $('hv-result').style.display='none';
   $('hv-start-btn').style.display='';$('hv-done-btn').style.display='none';
   // Build zone (wider with steel scythe)
-  const zoneW=state.upgrades.scythe?34:22; // percent of lane width
+  const baseZone=state.upgrades.scythe?34:22;
+  const zoneW=Math.max(10,Math.round(baseZone*(1+diff.harvestZoneBonus)));
   hv.zoneLeft=Math.random()*(60-zoneW)+20; // 20..80-zoneW
   hv.zoneWidth=zoneW;
   const lane=$('hv-lane');
@@ -629,7 +767,7 @@ function startHarvest(){
   $('hv-start-btn').style.display='none';
   hv.phase='needle';
   hv.needlePos=2;hv.needleDir=1;
-  hv.needleSpeed=state.upgrades.scythe?0.35:0.55;
+  hv.needleSpeed=state.upgrades.scythe?diff.needleSpeed*0.65:diff.needleSpeed;
   $('hv-lane').style.cursor='pointer';
   $('hv-lane').onclick=needleStop;
   animateNeedle();
@@ -733,7 +871,7 @@ function finishHarvest(){
   render();
 }
 
-render();
+showDiffScreen();
 </script>
 </body>
 </html>
