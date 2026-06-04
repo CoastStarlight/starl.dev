@@ -62,9 +62,11 @@ button:disabled{opacity:.3;cursor:default;}
 .shop-btn .btn-title{font-size:.95rem;font-weight:600;color:var(--text);}
 .shop-btn .btn-desc{font-size:.78rem;color:var(--text3);margin-top:2px;line-height:1.4;}
 .shop-btn .btn-cost{font-size:.8rem;color:var(--gold-dim);margin-top:5px;}
-.log{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--border2);border-radius:0 8px 8px 0;padding:10px 14px;font-size:.95rem;color:var(--text2);font-style:italic;min-height:40px;margin-top:10px;box-shadow:var(--shadow);}
-.log.bad{border-left-color:var(--red-light);color:#e08070;}
-.log.good{border-left-color:var(--green-light);color:#a0d060;}
+.log-wrap{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+.log-entry{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--border2);border-radius:0 8px 8px 0;padding:9px 14px;font-size:.95rem;color:var(--text2);font-style:italic;box-shadow:var(--shadow);animation:fadeIn .25s ease;}
+.log-entry.bad{border-left-color:var(--red-light);color:#e08070;}
+.log-entry.good{border-left-color:var(--green-light);color:#a0d060;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 .g-overlay{position:absolute;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;border-radius:10px;z-index:10;}
 .g-modal{background:var(--card);border:1px solid var(--gold-dim);border-radius:12px;padding:2rem 1.5rem;text-align:center;max-width:280px;box-shadow:0 0 40px rgba(212,168,67,.2),var(--shadow);}
 .g-modal h3{font-family:'Uncial Antiqua',serif;font-size:1.4rem;color:var(--gold);margin-bottom:8px;}
@@ -257,7 +259,7 @@ button:disabled{opacity:.3;cursor:default;}
     <div class="shop-grid" id="shop-grid"></div>
   </div>
 
-  <div class="log" id="log">You wake to frozen ground. Another year begins.</div>
+  <div class="log-wrap" id="log-wrap"><div class="log-entry">You wake to frozen ground. Another year begins.</div></div>
 
   <div class="guide">
     <div class="guide-title">📖 How to Play</div>
@@ -403,7 +405,7 @@ const DIFF_CONFIG={
     plantTimerBonus:-5,
     eventChanceMult:1.5,
     taxStep:3,
-    blightChance:0.45,
+    blightChance:0.35,
     needleSpeed:0.72,
     label:'Bonded Slave ⛓️'
   }
@@ -427,6 +429,8 @@ function startGame(){
   state=freshState();
   $('diff-screen').style.display='none';
   $('wrap').style.display='block';
+  clearLog();
+  $('log-wrap').innerHTML='<div class="log-entry">You wake to frozen ground. Another year begins.</div>';
   render();
 }
 
@@ -494,7 +498,19 @@ function render(){
   });
 }
 
-function log(msg,type=''){const el=$('log');el.textContent=msg;el.className='log '+(type||'');}
+function log(msg,type=''){
+  const wrap=$('log-wrap');
+  // Keep at most 4 messages visible; drop oldest if over limit
+  while(wrap.children.length>=5)wrap.removeChild(wrap.firstChild);
+  const el=document.createElement('div');
+  el.className='log-entry'+(type?' '+type:'');
+  el.textContent=msg;
+  wrap.appendChild(el);
+  wrap.scrollTop=wrap.scrollHeight;
+}
+function clearLog(){
+  $('log-wrap').innerHTML='';
+}
 function switchTab(tab){
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['farm','shop'][i]===tab));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
@@ -572,19 +588,16 @@ const EVENTS=[
 ];
 
 function rollEvents(seasonIdx){
-  // At most one event per season transition; weight toward bad luck in late game
   const eligible=EVENTS.filter(e=>
     state.year>=e.minYear &&
     (e.season===null||e.season===seasonIdx)
   );
-  // Shuffle
   for(let i=eligible.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[eligible[i],eligible[j]]=[eligible[j],eligible[i]];}
   for(const ev of eligible){
     if(Math.random()<ev.chance(state.year)*diff.eventChanceMult){
       const msg=ev.apply(state);
-      // Small delay so main season log shows first, then event pops
-      setTimeout(()=>{log(msg,ev.type);render();checkDeath();},350);
-      return; // one event per transition
+      log(msg,ev.type); // appended immediately alongside the season message
+      return;
     }
   }
 }
@@ -620,6 +633,7 @@ function endSeason(){
     }
   }
   if(state.seasonIdx===0){
+    clearLog();
     state.year++;state.plowed=false;state.harvested=false;
     state.health=Math.max(10,state.health-5);
     if(state.plots.length!==totalPlots())state.plots=Array(totalPlots()).fill('empty');
